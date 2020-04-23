@@ -1,0 +1,61 @@
+---
+title: "Week 2 HW"
+author: "Sofya Lipkind"
+date: "4/22/2020"
+output: 
+  html_document: 
+    keep_md: yes
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(lme4)
+library(lmerTest)
+```
+
+###CHAPTER 3: VISUALIZATIONS
+
+####Q: Do cars w/ big engines use more fuel than w/ small engines? (dataframe *mpg*)
+```{r}
+head(mpg)
+summary(mpg)
+#manufacturer model ,displ(engine size in L),  year,   cyl(#cylinders), trans(manual vs auto),  drv(front, rear, or 4wd),     cty(city mpg),   hwy(fuel efficiency in mpg), fl(fuel type),    class(category of car)  
+#What variables seem relevant to this question?
+# displ, hwy, possibly cty
+# 
+# First, let's tidy things up a little
+# 
+mpg <- mpg %>% select(hwy,displ,cty)
+
+
+plot( mpg$hwy ~ mpg$displ)
+#inverse relationship, roughly - as engine size increases, fuel efficiency decreases
+plot(mpg$cty ~ mpg$displ)
+#slightly steeper inverse relationship
+
+
+#well... that's cool, but let's do it in ggplot. Can I put both cty and hwy on the same plot?
+
+plots1 <- mpg %>% ggplot(
+  aes(x = displ)) +
+  geom_jitter(aes(y = cty), color = "maroon", shape = 8) +
+  geom_jitter(aes(y = hwy), color = "cornflowerblue", shape = 1) + #REVELATION TO JUST DO TWO GEOM_JITTERS!!! Bless you, Stack Overflow.
+  ggtitle("Comparing mpg in cities vs highways by engine size") + 
+  scale_x_continuous(name = "engine size (L)") +
+  scale_y_continuous(name = "fuel efficiency (mpg)")
+plots1
+plots1 + annotate(label = "Makeshift legend: maroon = city, blue = highway", x = 5, y = 50, geom = "text") #QUESTION: How would I get the legend to work when I manually set the colors and shapes b/w two geom_jitters?
+
+#Hooray! I mean, it doesn't help me quantify things any more, but it makes it easier to compare cty vs hwy
+
+#How might we quantify this relationship a bit more?
+
+
+
+
+
+```
+ 
