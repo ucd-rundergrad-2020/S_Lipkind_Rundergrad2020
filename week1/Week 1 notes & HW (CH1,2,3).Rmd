@@ -16,19 +16,16 @@ library(lme4)
 library(lmerTest)
 ```
 
-###CHAPTER 3: VISUALIZATIONS
+##CHAPTER 3: VISUALIZATIONS
 
-####Q: Do cars w/ big engines use more fuel than w/ small engines? (dataframe *mpg*)
+###Q: Do cars w/ big engines use more fuel than w/ small engines? (dataframe *mpg*)
+_note that this was done without the textbook, so it may not follow those results strictly. Just wanted to see how I would approach answering the question._
 ```{r}
 head(mpg)
 summary(mpg)
 #manufacturer model ,displ(engine size in L),  year,   cyl(#cylinders), trans(manual vs auto),  drv(front, rear, or 4wd),     cty(city mpg),   hwy(fuel efficiency in mpg), fl(fuel type),    class(category of car)  
 #What variables seem relevant to this question?
 # displ, hwy, possibly cty
-# 
-# First, let's tidy things up a little
-# 
-mpg <- mpg %>% select(hwy,displ,cty)
 
 
 plot( mpg$hwy ~ mpg$displ)
@@ -53,9 +50,90 @@ plots1 + annotate(label = "Makeshift legend: maroon = city, blue = highway", x =
 
 #How might we quantify this relationship a bit more?
 
+city <- lm(data = mpg, cty ~ displ)
+summary(city)
+
+highway <- lm(data = mpg, hwy ~ displ)
+summary(highway)
+
+#conclusions:
+# 1. highway had 10 more mpg than city, without engine size effect
+# 2. highway was slightly more negatively affected by engine size (-3.5 vs -2.6)
+# 3. these results are highly significant
+```
 
 
+### QUESTION 3.2.4
 
+1: Run ggplot(data = mpg). What do you see?
+
+```{r}
+ggplot(data = mpg)
+```
+I see a blank image.
+
+2: How many rows are in mpg? How many columns?
+
+There are 234 observations (rows), and 11 columns. 
+
+3:What does the drv variable describe? Read the help for ?mpg to find out.
+
+drv = is the vehicle:  
+* front-wheel drive  
+* back-wheel drive  
+* four-wheel drive
+
+4:Make a scatterplot of hwy vs cyl.
+
+```{r}
+plot(data = mpg, cyl ~ hwy)
+
+#makes sense, since cyl is a discrete numerical variable, and hwy is continuous numerical
+```
+
+5:What happens if you make a scatterplot of class vs drv? Why is the plot not useful?
+
+```{r}
+plot(data = mpg, drv ~ class)
+```
+
+Well, class and drv are both categorical variables, so they are unsuited to the quantitative lens given by a scatterplot. Since there is no quantitative data for plot() to work with, there is an ERROR.
+
+
+###QUESTION 3.3.1
+
+1:What’s gone wrong with this code? Why are the points not blue?
+
+```{r}
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy, color = "blue"))
+```
+
+Well, you dingus, you put your closing aes parenthesis in the wrong spot! Color is assigned as an aesthetic with a dummy variable ("blue"), so it just does whatever.
+
+If you were to instead do this:
+```{r}
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy), color = "blue")
+```
+
+See? Much better!
+
+2: Which variables in mpg are categorical? Which variables are continuous? (Hint: type ?mpg to read the documentation for the dataset). How can you see this information when you run mpg?
+
+```{r}
+labels(mpg)
+#shows column titles
+summary(mpg)
+#shows all columns, along with class and any other relevant information
+#Categorical variables will show as a 'character' class (or as factors, iirc).
+#Continuous variables will show a quantile distribution.
+```
+
+3:Map a continuous variable to color, size, and shape. How do these aesthetics behave differently for categorical vs. continuous variables?
+
+```{r}
 
 ```
- 
+
+
