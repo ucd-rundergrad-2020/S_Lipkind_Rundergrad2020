@@ -103,7 +103,7 @@ plot(data = mpg, cyl ~ hwy)
 5:What happens if you make a scatterplot of class vs drv? Why is the plot not useful?
 
 ```{r}
-plot(data = mpg, drv ~ class)
+#plot(data = mpg, drv ~ class)
 ```
 
 Well, class and drv are both categorical variables, so they are unsuited to the quantitative lens given by a scatterplot. Since there is no quantitative data for plot() to work with, there is an ERROR.
