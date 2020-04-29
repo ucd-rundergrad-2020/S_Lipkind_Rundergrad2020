@@ -18,6 +18,13 @@ library(lmerTest)
 
 ##CHAPTER 3: VISUALIZATIONS
 
+```{r}
+picsave <- function(graph, name) {
+  ggsave(plot = graph, filename= name, device = "pdf", width = 12, height = 8, path = "~/GitHub/S_Lipkind_Rundergrad2020/week1/")
+}
+```
+
+
 ###Q: Do cars w/ big engines use more fuel than w/ small engines? (dataframe *mpg*)
 _note that this was done without the textbook, so it may not follow those results strictly. Just wanted to see how I would approach answering the question._
 ```{r}
@@ -47,6 +54,8 @@ plots1
 plots1 + annotate(label = "Makeshift legend: maroon = city, blue = highway", x = 5, y = 50, geom = "text") #QUESTION: How would I get the legend to work when I manually set the colors and shapes b/w two geom_jitters?
 
 #Hooray! I mean, it doesn't help me quantify things any more, but it makes it easier to compare cty vs hwy
+
+picsave(plots1, "warmupplot.pdf")
 
 #How might we quantify this relationship a bit more?
 
