@@ -63,7 +63,7 @@ summary(highway)
 ```
 
 
-### QUESTION 3.2.4
+### QUESTION 3.2.4 (1-5)
 
 1: Run ggplot(data = mpg). What do you see?
 
@@ -100,7 +100,7 @@ plot(data = mpg, drv ~ class)
 Well, class and drv are both categorical variables, so they are unsuited to the quantitative lens given by a scatterplot. Since there is no quantitative data for plot() to work with, there is an ERROR.
 
 
-###QUESTION 3.3.1
+###QUESTION 3.3.1 (1-6)
 
 1:What’s gone wrong with this code? Why are the points not blue?
 
@@ -126,8 +126,11 @@ labels(mpg)
 #shows column titles
 summary(mpg)
 #shows all columns, along with class and any other relevant information
+#Heuristic:
 #Categorical variables will show as a 'character' class (or as factors, iirc).
 #Continuous variables will show a quantile distribution.
+#
+#Exceptions: dates or times are categorical, such as 'year'; variables that can only have whole numbers (e.g. cyl) are categorical.
 ```
 
 3:Map a continuous variable to color, size, and shape. How do these aesthetics behave differently for categorical vs. continuous variables?
@@ -136,4 +139,14 @@ summary(mpg)
 
 ```
 
+4: What happens if you map the same variable to multiple aesthetics?
 
+5: What does the stroke aesthetic do? What shapes does it work with? (Hint: use ?geom_point)
+
+6: What happens if you map an aesthetic to something other than a variable name, like aes(colour = displ < 5)? Note, you’ll also need to specify x and y.
+
+###QUESTION 3.5.1 (1-6)
+
+
+
+###QUESTION 3.6.1 (1-5, one graph from 6)
