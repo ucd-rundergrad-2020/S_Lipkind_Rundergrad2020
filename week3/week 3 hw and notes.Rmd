@@ -1,11 +1,13 @@
 ---
 title: "Week 3 HW and Notes"
-output: html_notebook
-editor_options: 
+output:
+  html_document:
+    df_print: paged
+editor_options:
   chunk_output_type: console
 ---
 # SETUP
-```{r}
+```{r include=FALSE}
 library(tidyverse)
 library(nycflights13)
 setwd("~/GitHub/S_Lipkind_Rundergrad2020/week3/")
@@ -20,12 +22,12 @@ picsave <- function(graph, name) {
 
 # NOTES
 
-##CHAPTER 4
+## CHAPTER 4
   N/A
   
-##CHAPTER 5
+## CHAPTER 5
 
-```{r}
+```{r include=FALSE}
 flights <- flights #so I can see it in my Environment
 ```
 
@@ -65,18 +67,124 @@ filter(diamonds, carat > 3) # diamond -> diamonds
 
 ### 5.2.4
 
-  ####1.1
+Find all flights that...
+
+  #### 1.1: had an arrival delay of two or more hours
   
+```{r}
+head(flights)
+filter(flights, arr_delay >= 2)
+```
   
-
-  ####1.4
-
-  ####1.5
-
-  ####1.7
-
-  ####2
+  #### 1.4: Departed in summer (July, August, and September)
   
-  ####3
+```{r}
+filter(flights, month %in% c(7,8,9))
+```
+
+  #### 1.5: Arrived more than two hours late, but didn’t leave late
+
+```{r}
+filter(flights, arr_delay > 2 & dep_delay == 0)
+```
+
+  #### 1.7: Departed between midnight and 6am (inclusive)
+  
+```{r}
+(d <- filter(flights, dep_time >= 0, dep_time <= 600))
+```
+  
+  #### 2: Another useful dplyr filtering helper is between(). What does it do? Can you use it to simplify the code needed to answer the previous challenges?
+
+?between
+*It's an inclusive shortcut to find values within a certain range.*
+```{r}
+e <- filter(flights, dep_time %in% between(dep_time,0, 600))
+d == e
+```
+
+  #### 3: How many flights have a missing dep_time? What other variables are missing? What might these rows represent?
+
+```{r}
+filter(flights, dep_time %in% NA) # 8255 rows/flights
+
+#these observations also all have NA dep_delay, arr_time, arr_delay.
+#Hypothesis: cancelled flights
+```
+
   
 ### 5.3.1
+
+#### How could you use arrange() to sort all missing values to the start? (Hint: use is.na()).
+```{r}
+arrange(flights, desc(is.na(dep_delay))) #this works, but is it the intended solution?
+```
+
+#### Sort flights to find the most delayed flights. Find the flights that left earliest.
+```{r}
+arrange(flights, dep_time, desc(dep_delay))
+```
+
+#### Sort flights to find the fastest (highest speed) flights.
+```{r}
+y <- arrange(flights, desc(distance), air_time)
+#(select(y, distance, air_time)) -> double-checking
+```
+
+#### Which flights travelled the farthest? Which travelled the shortest?
+```{r}
+(longest_distance <- top_n(flights, 10, distance))
+(shortest_distance <- top_n(flights, -10, distance))
+```
+ 
+ 
+### 5.4.1
+
+#### Brainstorm as many ways as possible to select dep_time, dep_delay, arr_time, and arr_delay from flights.
+```{r}
+#one option: select()
+```
+
+#### What happens if you include the name of a variable multiple times in a select() call?
+```{r}
+select(flights, day, month, day, month, dep_delay, dep_delay)
+```
+*Repeating variable names does not appear to make a difference. Only the sorting of the initial appearance of each name within the list matters.*
+
+#### What does the one_of() function do? Why might it be helpful in conjunction with this vector?
+```{r}
+vars <- c("year", "month", "day", "dep_delay", "arr_delay") 
+select(flights, one_of(vars))
+```
+
+*one_of() allows one to make a character vector with specific column names that you can then select for.*
+
+#### Does the result of running the following code surprise you? How do the select helpers deal with case by default? How can you change that default?
+```{r}
+select(flights, contains("TIME"))
+```
+
+*The results aren't too surprising, though I didn't realize select was not case-sensitive.*
+*If I wanted to specify case, I could add the specifier below:*
+```{r}
+select(flights, contains("time", ignore.case = FALSE))
+```
+
+
+### 5.5.2
+
+#### Currently dep_time and sched_dep_time are convenient to look at, but hard to compute with because they’re not really continuous numbers. Convert them to a more convenient representation of number of minutes since midnight.
+```{r}
+head(flights)
+
+```
+
+#### Compare air_time with arr_time - dep_time. What do you expect to see? What do you see? What do you need to do to fix it?
+
+#### Compare dep_time, sched_dep_time, and dep_delay. How would you expect those three numbers to be related?
+
+#### Find the 10 most delayed flights using a ranking function. How do you want to handle ties? Carefully read the documentation for min_rank().
+
+#### What does 1:3 + 1:10 return? Why?
+
+#### What trigonometric functions does R provide?
