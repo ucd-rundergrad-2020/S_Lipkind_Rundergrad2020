@@ -1,0 +1,82 @@
+---
+title: "Week 3 HW and Notes"
+output: html_notebook
+editor_options: 
+  chunk_output_type: console
+---
+# SETUP
+```{r}
+library(tidyverse)
+library(nycflights13)
+setwd("~/GitHub/S_Lipkind_Rundergrad2020/week3/")
+```
+
+FXN: Save graphical outputs
+```{r}
+picsave <- function(graph, name) {
+  ggsave(plot = graph, filename= name, device = "pdf", width = 12, height = 8, path = "~/GitHub/S_Lipkind_Rundergrad2020/week3/pics/")
+}
+```
+
+# NOTES
+
+##CHAPTER 4
+  N/A
+  
+##CHAPTER 5
+
+```{r}
+flights <- flights #so I can see it in my Environment
+```
+
+  
+# PROBLEMS
+## CHAPTER 4 PROBLEMS
+
+### 4.4
+
+1. Why does this code not work?
+
+```{r}
+my_variable <- 10
+my_varıable
+#> Error in eval(expr, envir, enclos): object 'my_varıable' not found
+```
+
+_Was this written by someone who speaks Turkish or something? Not sure how else someone could use *ı* instead of *i*._
+
+2. Tweak each of the following R commands so that they run correctly:
+
+```{r}
+a <- ggplot(data = mpg) + #dota -> data
+  geom_point(mapping = aes(x = displ, y = hwy))
+picsave(a, "4.4.2 graph.pdf")
+
+filter(mpg, cyl == 8) #= -> ==
+filter(diamonds, carat > 3) # diamond -> diamonds
+
+```
+
+3. Press Alt + Shift + K. What happens? How can you get to the same place using the menus?
+
+*Oh my goodness, that is amazing. An entire list of keyboard shortcuts. You could also reach that page by going to Help > Keyboard Shortcuts Help.*
+
+## CHAPTER 5 PROBLEMS
+
+### 5.2.4
+
+  ####1.1
+  
+  
+
+  ####1.4
+
+  ####1.5
+
+  ####1.7
+
+  ####2
+  
+  ####3
+  
+### 5.3.1
