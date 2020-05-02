@@ -100,7 +100,7 @@ filter(flights, arr_delay > 2 & dep_delay == 0)
 *It's an inclusive shortcut to find values within a certain range.*
 ```{r}
 e <- filter(flights, dep_time %in% between(dep_time,0, 600))
-d == e
+# d == e
 ```
 
   #### 3: How many flights have a missing dep_time? What other variables are missing? What might these rows represent?
