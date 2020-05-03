@@ -177,6 +177,20 @@ select(flights, contains("time", ignore.case = FALSE))
 ```{r}
 head(flights)
 
+minutes <- function(miltime) {
+  miltime %/% 100 * 60 + miltime %% 100
+}
+
+mod <- flights %>%
+  select(dep_time,sched_dep_time) %>%
+  lapply(.,minutes) %>%
+  as_tibble() %>%
+  rename(
+    mod_dep_time = dep_time,
+    mod_sched_dep_time = sched_dep_time) %>%
+  left_join(.,flights)
+mod
+  
 ```
 
 #### Compare air_time with arr_time - dep_time. What do you expect to see? What do you see? What do you need to do to fix it?
