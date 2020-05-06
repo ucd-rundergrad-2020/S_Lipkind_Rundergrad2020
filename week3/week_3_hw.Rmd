@@ -266,23 +266,31 @@ flights %>%
   group_by(carrier, dest) %>%
   summarize(
     ad = mean(arr_delay, na.rm = TRUE), 
-    dd = mean(dep_delay, na.rm = TRUE)) %>%
+    dd = mean(dep_delay, na.rm = TRUE),
+    n()) %>%
   arrange(desc(ad +dd))
-#carrier dest     ad    dd
-#   <chr>   <chr> <dbl> <dbl>
- #1 UA      STL   110    77.5
- #2 OO      ORD   107    67  
- #3 OO      DTW    68.5  61  
- #4 UA      RDU    56    60  
- #5 EV      PBI    40.7  48.7
- #6 EV      TYS    41.2  41.8
- #7 EV      CAE    42.8  36.7
- #8 EV      TUL    33.7  34.9
- #9 EV      OKC    30.6  30.6
-#10 UA      JAC    29.9  28.7
+#   carrier dest     ad    dd `n()`
+#   <chr>   <chr> <dbl> <dbl> <int>
+# 1 UA      STL   110    77.5     2
+# 2 OO      ORD   107    67       1
+# 3 OO      DTW    68.5  61       2
+# 4 UA      RDU    56    60       1
+# 5 EV      PBI    40.7  48.7     6
+# 6 EV      TYS    41.2  41.8   323
+# 7 EV      CAE    42.8  36.7   113
+# 8 EV      TUL    33.7  34.9   315
+# 9 EV      OKC    30.6  30.6   346
+#10 UA      JAC    29.9  28.7    23
 ```
 ```{r}
 #Now, how would I handle distinguishing bad airports vs bad carriers? 
 #Bad airports will affect any airplanes that (dis)embark there, and bad airlines will affect all of their associated airplanes.
+flights %>%
+  group_by(carrier, dest) %>%
+  summarize(
+    ad = mean(arr_delay, na.rm = TRUE), 
+    dd = mean(dep_delay, na.rm = TRUE),
+    n()) %>%
+  arrange(desc(n()))
 ```
 
