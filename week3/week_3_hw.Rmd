@@ -258,4 +258,31 @@ tan(pi)
 
 ### 5.6.7
 
-#### 5.
+#### 5. Which carrier has the worst delays? Challenge: can you disentangle the effects of bad airports vs. bad carriers? Why/why not? (Hint: think about flights %>% group_by(carrier, dest) %>% summarise(n()))
+```{r}
+#Carrier that has longest delays, on average
+glimpse(flights)
+flights %>%
+  group_by(carrier, dest) %>%
+  summarize(
+    ad = mean(arr_delay, na.rm = TRUE), 
+    dd = mean(dep_delay, na.rm = TRUE)) %>%
+  arrange(desc(ad +dd))
+#carrier dest     ad    dd
+#   <chr>   <chr> <dbl> <dbl>
+ #1 UA      STL   110    77.5
+ #2 OO      ORD   107    67  
+ #3 OO      DTW    68.5  61  
+ #4 UA      RDU    56    60  
+ #5 EV      PBI    40.7  48.7
+ #6 EV      TYS    41.2  41.8
+ #7 EV      CAE    42.8  36.7
+ #8 EV      TUL    33.7  34.9
+ #9 EV      OKC    30.6  30.6
+#10 UA      JAC    29.9  28.7
+```
+```{r}
+#Now, how would I handle distinguishing bad airports vs bad carriers? 
+#Bad airports will affect any airplanes that (dis)embark there, and bad airlines will affect all of their associated airplanes.
+```
+
