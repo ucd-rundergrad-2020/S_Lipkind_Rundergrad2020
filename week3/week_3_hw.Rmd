@@ -1,8 +1,8 @@
 ---
 title: "Week 3 HW and Notes"
 output:
-  html_document:
-    df_print: paged
+  html_document: 
+    keep_md: yes
 editor_options:
   chunk_output_type: console
 ---
@@ -285,12 +285,12 @@ flights %>%
 ```{r}
 #Now, how would I handle distinguishing bad airports vs bad carriers? 
 #Bad airports will affect any airplanes that (dis)embark there, and bad airlines will affect all of their associated airplanes.
-flights %>%
-  group_by(carrier, dest) %>%
-  summarize(
-    ad = mean(arr_delay, na.rm = TRUE), 
-    dd = mean(dep_delay, na.rm = TRUE),
-    n()) %>%
-  arrange(desc(n()))
+#flights %>%
+#  group_by(carrier, dest) %>%
+#  summarize(
+#    ad = mean(arr_delay, na.rm = TRUE), 
+#    dd = mean(dep_delay, na.rm = TRUE),
+#    n()) %>%
+#  arrange(desc(n()))
 ```
 
