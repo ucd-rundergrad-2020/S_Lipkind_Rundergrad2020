@@ -1,0 +1,69 @@
+---
+title: "Week 4 HW"
+output: html_notebook
+---
+
+## SETUP
+```{r setup, include=FALSE}
+#knitr::opts_chunk$set(eval = FALSE)
+library(tidyverse)
+setwd("~/GitHub/S_Lipkind_Rundergrad2020/week4/")
+```
+
+FXN: Save graphical outputs
+```{r}
+picsave <- function(graph, name) {
+  ggsave(plot = graph, filename= name, device = "pdf", width = 12, height = 8, path = "~/GitHub/S_Lipkind_Rundergrad2020/week4/pics/")
+}
+```
+---
+## CHAPTER 7 PROBLEMS
+
+### 7.3.4
+
+#### 1. Explore the distribution of each of the x, y, and z variables in diamonds. What do you learn? Think about a diamond and how you might decide which dimension is the length, width, and depth.
+```{r}
+glimpse(diamonds)
+#(xyz) are continuous variables, measuring the dimensions of each diamond
+#Want to see distributions of each axis, but hmm, the three axes are not united by anything that I can easily call in ggplot in one go
+xyzdist <- ggplot(diamonds, mapping = aes()) +
+  geom_histogram(x, position = "dodge", color = IQR(x)) +
+  geom_histogram(y, position = "dodge", color = IQR(y)) +
+  geom_histogram(z, position = "dodge", color = IQR(z))
+xyzdist
+```
+
+
+#### 2. Explore the distribution of price. Do you discover anything unusual or surprising? (Hint: Carefully think about the binwidth and make sure you try a wide range of values.)
+
+#### 3. How many diamonds are 0.99 carat? How many are 1 carat? What do you think is the cause of the difference?
+
+#### 4. Compare and contrast coord_cartesian() vs xlim() or ylim() when zooming in on a histogram. What happens if you leave binwidth unset? What happens if you try and zoom so only half a bar shows?
+
+
+
+
+### 7.4.1
+
+#### 1.
+
+#### 2.
+
+
+### 7.5.1.1
+
+#### 1.
+
+#### 2.
+
+#### 3.
+
+#### 5.
+
+#### 6.
+
+
+### Last Problem
+
+#### "Describe an *experiment* that would possess 2 *categorical* variables and 2 *continuous* variables."
+
