@@ -9,6 +9,7 @@ output:
 ```{r setup, include=FALSE}
 #knitr::opts_chunk$set(eval = FALSE)
 library(tidyverse)
+library(nycflights13)
 setwd("~/GitHub/S_Lipkind_Rundergrad2020/week4/")
 ```
 
@@ -24,45 +25,197 @@ picsave <- function(graph, name) {
 ### 7.3.4
 
 #### 1. Explore the distribution of each of the x, y, and z variables in diamonds. What do you learn? Think about a diamond and how you might decide which dimension is the length, width, and depth.
-```{r}
+```{r 7.3.4.1}
 glimpse(diamonds)
 #(xyz) are continuous variables, measuring the dimensions of each diamond
 #Want to see distributions of each axis, but hmm, the three axes are not united by anything that I can easily call in ggplot in one go
-xyzdist <- ggplot(diamonds, mapping = aes()) +
-  geom_histogram(x, position = "dodge", color = IQR(x)) +
-  geom_histogram(y, position = "dodge", color = IQR(y)) +
-  geom_histogram(z, position = "dodge", color = IQR(z))
-xyzdist
+#Solution: gathering to create "axis" and "length"
+
+diamonds %>% gather(axis, length, c(x,y,z)) %>%
+  ggplot(aes(x = length, fill = axis, color = axis)) +
+  geom_density(alpha = .1) +
+  xlim(0,10)
+#x and y axes have nearly complete overlap, while z is smaller. Is z depth?
 ```
 
 
 #### 2. Explore the distribution of price. Do you discover anything unusual or surprising? (Hint: Carefully think about the binwidth and make sure you try a wide range of values.)
+```{r 7.3.4.2}
+glimpse(diamonds)
+
+(b10 <- diamonds %>% ggplot(aes(
+  x = price)) +
+  geom_histogram(binwidth = 10))
+
+#Appears to be a small gap in rows that have a price ~$1000
+
+(psmallb10 <- diamonds %>% filter(price < 5000) %>%
+  ggplot(aes(x = price)) +
+  geom_histogram(binwidth = 10))
+
+#More accurately, the gap is around $1500
+
+(plargeb10 <- diamonds %>% filter(price > 5000) %>%
+  ggplot(aes(x = price)) +
+  geom_histogram(binwidth = 10))
+
+#seems pretty standard, makes sense to have lower counts overall
+```
+
+```{r 7.3.4.2 bonus}
+#for funsies, comparing binwidth 10 to a density plot, which doesn't use bins at all
+diamonds %>% ggplot(aes(
+  x = price)) +
+  geom_histogram(aes(y = ..density..), binwidth = 10, position = "identity", color = "green") +
+  geom_histogram(aes(y = ..density..), binwidth = 300, position = "identity", color = "red") +
+  geom_density(fill = "blue", alpha = .2, color = "blue")
+
+#I have no idea what is up with the density y-axis, but the density plot itself acts like a smoothened histogram plot, generalizing the peaks and valleys seen in binwidth = 10 (green)
+#Not sure why the density plot underestimates the beginning peak so much
+# I'm sorry this looks so ugly.
+```
 
 #### 3. How many diamonds are 0.99 carat? How many are 1 carat? What do you think is the cause of the difference?
+```{r 7.3.4.3}
+diamonds %>% count(carat == .99) #23
+diamonds %>% count(carat == 1.0) #1558
+
+#Hypothesis: it is likely that human measurers were likely to round to the nearest integer, rather than specifying .99.
+```
+
 
 #### 4. Compare and contrast coord_cartesian() vs xlim() or ylim() when zooming in on a histogram. What happens if you leave binwidth unset? What happens if you try and zoom so only half a bar shows?
+```{r 7.3.4.4}
 
+a <- diamonds %>% ggplot(aes(
+  x = price)) +
+  geom_histogram(binwidth = 10) +
+  coord_cartesian(xlim = c(0,2000), ylim = c(0, 320))
 
+b <- diamonds %>% ggplot(aes(
+  x = price)) +
+  geom_histogram(binwidth = 10) +
+  xlim(0,2000) +
+  ylim(0,320) #xlim and ylim removed far more values
 
+c <- diamonds %>% ggplot(aes(
+  x = price)) +
+  geom_histogram() +
+  coord_cartesian(xlim = c(0,2000), ylim = c(0, 320)) #defaults to binwidth = 30
+ 
+d <- diamonds %>% ggplot(aes(
+  x = price)) +
+  geom_histogram(binwidth = 200) +
+  coord_cartesian(xlim = c(0,100)) #nothing shows up when the range is smaller than the size of the bin
+
+a
+b
+c
+d
+```
 
 ### 7.4.1
 
-#### 1.
+#### 1. What happens to missing values in a histogram? What happens to missing values in a bar chart? Why is there a difference?
 
-#### 2.
+```{r 7.4.1.1a}
+flights %>% ggplot(aes(x = dep_time)) + geom_histogram()
+summary(flights$dep_time) #8255 NA
+```
+*If na.rm = FALSE, histograms will not include NA values, instead giving a warning stating, "Removed 8255 rows containing non-finite values (stat_bin)."*
+```{r}
+glimpse(flights$origin)
 
+na_flights <- gsub("EWR", NA, flights$origin) #replace one value of origin with NA
+
+flights <- mutate(flights, origin = NULL, na_origin = na_flights)
+
+flights %>% ggplot(aes(x = na_origin)) + geom_bar()
+```
+*Bar charts include NA in the chart.*  
+*This makes sense, because bar charts quantify categorical variables, whereas histograms quantify continuous variables. Histograms have no way of including a non_continuous value, but bar charts do.*
+
+#### 2. What does na.rm = TRUE do in mean() and sum()?
+```{r}
+mean(flights$dep_time, na.rm = TRUE) #12.63907
+mean(flights$dep_time) #NA
+
+sum(flights$dep_time, na.rm = TRUE) #443210949
+sum(flights$dep_time) #NA
+```
+*Because dep_time includes NA values which are included when na.rm = FALSE, any resulting calculation is necessarily NA. Using na.rm = TRUE removes NA values, leaving behind only continuous data.*
 
 ### 7.5.1.1
 
-#### 1.
+#### 1. Use what you’ve learned to improve the visualisation of the departure times of cancelled vs. non-cancelled flights.
+```{r 7.5.1.1.1}
+#so, comparing schedule departure times b/w cancelled/not cancelled, since cancelled flights
+#never departed
+#need to gather sched_dep_time for all rows where dep_time = NA, and compare to sched_dep_time for non-cancelled flights
+#use boxplot, coord_flip()
 
-#### 2.
+glimpse(flights)
+summary(flights)
 
-#### 3.
+#cancelled_flights <- filter(flights, is.na(flights$dep_time))
+#not_cancelled_flights <- filter(flights, !is.na(flights$dep_time))
 
-#### 5.
+flights %>% ggplot(aes(x = is.na(dep_time), y = sched_dep_time, na.rm = FALSE)) +
+  geom_boxplot(position = "dodge") +
+  ggtitle("Scheduled departure time in non-cancelled and cancelled flights")
+```
 
-#### 6.
+#### 2. What variable in the diamonds dataset is most important for predicting the price of a diamond? How is that variable correlated with cut? Why does the combination of those two relationships lead to lower quality diamonds being more expensive?
+```{r 7.5.1.1.2}
+glimpse(diamonds)
+#variables to consider: carat, color, clarity, table
+#which variables predict price the best?
+
+lm(data = diamonds, price ~ carat + color + clarity + table + cut) %>% summary(.)
+#wow, that's kind of a mess, but carat seems to have the largest effect
+
+diamonds %>% ggplot(aes(x = carat, y = cut)) +
+  geom_boxplot(aes(color = cut)) +
+  scale_colour_viridis_d()
+```
+*I'm not sure if I did that right, but there seems to be an interesting relationship between cut and carat wherein high carats are associated with the worst cuts, and low-mid carats have the best average quality*
+*Note: I tried to use geom_point(), but that seemed to obscure things a bit, so I went back to boxplot.*
+
+#### 3. Install the ggstance package, and create a horizontal boxplot. How does this compare to using coord_flip()?
+```{r 7.5.1.3}
+#install.packages("ggstance")
+#library(ggstance)
+#glimpse(flights)
+
+flights %>% filter( carrier == "UA") %>%
+  ggplot(aes(x = dep_time, y = carrier)) +
+  ggstance::geom_boxploth()
+
+flights %>% filter( carrier == "UA") %>%
+  ggplot(aes(y = dep_time, x = carrier)) +
+  geom_boxplot() +
+  coord_flip()
+```
+*They look exactly the same, but I had to switch x and y variables in ggstance to get it to work.*
+
+#### 5. Compare and contrast geom_violin() with a facetted geom_histogram(), or a coloured geom_freqpoly(). What are the pros and cons of each method?
+```{r 7.5.1.5}
+ggplot(data = diamonds, mapping = aes(x = price)) + 
+  geom_freqpoly(mapping = aes(colour = cut), binwidth = 500)
+
+ggplot(data = diamonds, mapping = aes(x = price)) + 
+  geom_histogram() +
+  facet_wrap(vars(cut))
+
+ggplot(data = diamonds, mapping = aes(x = cut, y = price)) + 
+  geom_violin()
+```
+*freqpoly allows one to directly compare counts b/w different categorical variables, which is handy! However, understanding the relationships may be a bit tricky to parse. Facetting essentially takes freqpoly and separates each category into its own plot, which can be helpful for seeing intra-category distributions. Meanwhile, violin plots do away with counts entirely, and show the distributions of price for each category. One may be able to get an intuitive sense of each category's distribution while comparing each other directly by price.*
+
+#### 6. If you have a small dataset, it’s sometimes useful to use geom_jitter() to see the relationship between a continuous and categorical variable. The ggbeeswarm package provides a number of methods similar to geom_jitter(). List them and briefly describe what each one does.
+```{r}
+
+```
 
 
 ### Last Problem
