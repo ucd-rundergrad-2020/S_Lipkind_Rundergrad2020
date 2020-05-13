@@ -3,6 +3,7 @@ title: "Week 4 HW"
 output:
   html_document: 
     keep_md: yes
+    theme: spacelab
 ---
 
 ## SETUP
