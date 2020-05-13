@@ -399,10 +399,22 @@ summary(flights)
 
 flights %>% ggplot(aes(x = is.na(dep_time), y = sched_dep_time, na.rm = FALSE)) +
   geom_boxplot(position = "dodge") +
-  ggtitle("Scheduled departure time in non-cancelled and cancelled flights")
+  geom_jitter()
 ```
 
 ![](week4_hw_files/figure-html/7.5.1.1.1-1.png)<!-- -->
+
+```r
+  ggtitle("Scheduled departure time in non-cancelled and cancelled flights")
+```
+
+```
+## $title
+## [1] "Scheduled departure time in non-cancelled and cancelled flights"
+## 
+## attr(,"class")
+## [1] "labels"
+```
 
 #### 2. What variable in the diamonds dataset is most important for predicting the price of a diamond? How is that variable correlated with cut? Why does the combination of those two relationships lead to lower quality diamonds being more expensive?
 
@@ -558,10 +570,10 @@ ggplot(data = diamonds, mapping = aes(x = cut, y = price)) +
 
 #### "Describe an *experiment* that would possess 2 *categorical* variables and 2 *continuous* variables."
 
-  *Let us revisit the classic plant music experiment. We shall play different kinds of music over different lengths of time, and observe the effect of growth to the petiole and the stem.*
-  * *categorical variables:*  
-      * *type of music played to plant*
-      * *time*
-    *continuous variables:*  
-      * *petiole elongation*
-      * *stem elongation*
+  *Let us revisit the classic plant music experiment. We shall play different kinds of music over different lengths of time, and observe the effect of growth to the petiole and the stem.*  
+  * *categorical variables:*    
+      * *type of music played to plant*  
+      * *time*  
+    *continuous variables:*    
+      * *petiole elongation*  
+      * *stem elongation*  

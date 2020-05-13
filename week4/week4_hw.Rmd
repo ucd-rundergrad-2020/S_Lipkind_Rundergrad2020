@@ -163,6 +163,7 @@ summary(flights)
 
 flights %>% ggplot(aes(x = is.na(dep_time), y = sched_dep_time, na.rm = FALSE)) +
   geom_boxplot(position = "dodge") +
+  geom_jitter()
   ggtitle("Scheduled departure time in non-cancelled and cancelled flights")
 ```
 
@@ -227,10 +228,10 @@ ggplot(data = diamonds, mapping = aes(x = cut, y = price)) +
 
 #### "Describe an *experiment* that would possess 2 *categorical* variables and 2 *continuous* variables."
 
-  *Let us revisit the classic plant music experiment. We shall play different kinds of music over different lengths of time, and observe the effect of growth to the petiole and the stem.*
-  * *categorical variables:*  
-      * *type of music played to plant*
-      * *time*
-    *continuous variables:*  
-      * *petiole elongation*
-      * *stem elongation*
+  *Let us revisit the classic plant music experiment. We shall play different kinds of music over different lengths of time, and observe the effect of growth to the petiole and the stem.*  
+  * *categorical variables:*    
+      * *type of music played to plant*  
+      * *time*  
+    *continuous variables:*    
+      * *petiole elongation*  
+      * *stem elongation*  
