@@ -14,7 +14,7 @@ setwd("~/GitHub/S_Lipkind_Rundergrad2020/week4/")
 ```
 
 FXN: Save graphical outputs
-```{r}
+```{r picsave}
 picsave <- function(graph, name) {
   ggsave(plot = graph, filename= name, device = "pdf", width = 12, height = 8, path = "~/GitHub/S_Lipkind_Rundergrad2020/week4/pics/")
 }
@@ -70,7 +70,7 @@ diamonds %>% ggplot(aes(
   geom_histogram(aes(y = ..density..), binwidth = 300, position = "identity", color = "red") +
   geom_density(fill = "blue", alpha = .2, color = "blue")
 
-#I have no idea what is up with the density y-axis, but the density plot itself acts like a smoothened histogram plot, generalizing the peaks and valleys seen in binwidth = 10 (green)
+#The density plot itself acts like a smoothened histogram plot, generalizing the peaks and valleys seen in binwidth = 10 (green)
 #Not sure why the density plot underestimates the beginning peak so much
 # I'm sorry this looks so ugly.
 ```
@@ -123,7 +123,7 @@ flights %>% ggplot(aes(x = dep_time)) + geom_histogram()
 summary(flights$dep_time) #8255 NA
 ```
 *If na.rm = FALSE, histograms will not include NA values, instead giving a warning stating, "Removed 8255 rows containing non-finite values (stat_bin)."*
-```{r}
+```{r 7.4.1.1b}
 glimpse(flights$origin)
 
 na_flights <- gsub("EWR", NA, flights$origin) #replace one value of origin with NA
@@ -136,7 +136,7 @@ flights %>% ggplot(aes(x = na_origin)) + geom_bar()
 *This makes sense, because bar charts quantify categorical variables, whereas histograms quantify continuous variables. Histograms have no way of including a non_continuous value, but bar charts do.*
 
 #### 2. What does na.rm = TRUE do in mean() and sum()?
-```{r}
+```{r 7.4.1.2}
 mean(flights$dep_time, na.rm = TRUE) #12.63907
 mean(flights$dep_time) #NA
 
@@ -174,11 +174,11 @@ glimpse(diamonds)
 lm(data = diamonds, price ~ carat + color + clarity + table + cut) %>% summary(.)
 #wow, that's kind of a mess, but carat seems to have the largest effect
 
-diamonds %>% ggplot(aes(x = carat, y = cut)) +
+diamonds %>% ggplot(aes(y = carat, x = cut)) +
   geom_boxplot(aes(color = cut)) +
   scale_colour_viridis_d()
 ```
-*I'm not sure if I did that right, but there seems to be an interesting relationship between cut and carat wherein high carats are associated with the worst cuts, and low-mid carats have the best average quality*
+*There seems to be an interesting relationship between cut and carat wherein high carats are associated with the worst cuts, and low-mid carats have the best average quality*
 *Note: I tried to use geom_point(), but that seemed to obscure things a bit, so I went back to boxplot.*
 
 #### 3. Install the ggstance package, and create a horizontal boxplot. How does this compare to using coord_flip()?
@@ -212,13 +212,24 @@ ggplot(data = diamonds, mapping = aes(x = cut, y = price)) +
 ```
 *freqpoly allows one to directly compare counts b/w different categorical variables, which is handy! However, understanding the relationships may be a bit tricky to parse. Facetting essentially takes freqpoly and separates each category into its own plot, which can be helpful for seeing intra-category distributions. Meanwhile, violin plots do away with counts entirely, and show the distributions of price for each category. One may be able to get an intuitive sense of each category's distribution while comparing each other directly by price.*
 
+
 #### 6. If you have a small dataset, it’s sometimes useful to use geom_jitter() to see the relationship between a continuous and categorical variable. The ggbeeswarm package provides a number of methods similar to geom_jitter(). List them and briefly describe what each one does.
-```{r}
 
-```
-
-
+ * *`position_quasirandom()` melds scatterplots and violin plots to give you a plot that shows the distribution of a categorical variable alongside the points that overlap.  *  
+ * *`geom_beeswarm()`, like `geom_jitter()`, introduces a small amount of random variation to produce plots where no points overlap. *  
+ * *`geom_quasirandom()`estimates kernel density (i.e. the pattern of point distribution) and uses the von der Corput sequence to distribute points in the plot quasirandomly. *
+ * *`method = "pseudorandom"` is a variation of quasirandom that uniformly distributes points after calculating kernel density.*  
+ * *`method = "smiley"` and `method = "frowney"` do.. I don't know what, honestly.*  
+ * *`method = "tukey"` resembles a barplot in appearance, and uses "constrained permutations of offsets" to distribute points (whatever that means).*  
+ 
 ### Last Problem
 
 #### "Describe an *experiment* that would possess 2 *categorical* variables and 2 *continuous* variables."
 
+  *Let us revisit the classic plant music experiment. We shall play different kinds of music over different lengths of time, and observe the effect of growth to the petiole and the stem.*
+  * *categorical variables:*  
+      * *type of music played to plant*
+      * *time*
+    *continuous variables:*  
+      * *petiole elongation*
+      * *stem elongation*
