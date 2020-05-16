@@ -1,0 +1,55 @@
+---
+title: "Week 5 HW - Tibbles and Data Importing"
+author: "Sofya Lipkind"
+date: "5/16/2020"
+output: 
+  html_document: 
+    keep_md: yes
+    theme: yeti
+---
+```{r setup, include = FALSE}
+library(tidyverse)
+```
+
+## Chapter 10 Problems
+
+### 10.5
+
+    #### 10.5.1: How can you tell if an object is a tibble? (Hint: try printing mtcars, which is a regular data frame).  
+*Tibbles are distinguished from data frames in that, when printed, they display the first 10 rows, along with all column names and their associated class. They also do not allow partial matching as data frames do.*  
+    #### 10.5.2: Compare and contrast the following operations on a data.frame and equivalent tibble. What is different? Why might the default data frame behaviours cause you frustration?
+```{r 10.5.2a}
+df <- data.frame(abc = 1, xyz = "a")
+df$x
+df[, "xyz"]
+df[, c("abc", "xyz")]
+```
+
+```{r 10.5.2b}
+
+```
+    #### 10.5.4  
+
+    #### 10.5.5  
+
+---
+
+## Chapter 11 Problems
+
+### 11.2.2
+
+#### 11.2.2.1  
+
+#### 11.2.2.4  
+
+#### 11.2.2.5  
+
+### **11.3.5**  
+
+#### 11.3.5.1  
+
+#### 11.3.5.2  
+
+#### 11.3.5.3  
+
+#### 11.3.5.7
