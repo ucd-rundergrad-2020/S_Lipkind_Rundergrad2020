@@ -15,22 +15,68 @@ library(tidyverse)
 
 ### 10.5
 
-    #### 10.5.1: How can you tell if an object is a tibble? (Hint: try printing mtcars, which is a regular data frame).  
+#### 10.5.1: How can you tell if an object is a tibble? (Hint: try printing mtcars, which is a regular data frame).  
 *Tibbles are distinguished from data frames in that, when printed, they display the first 10 rows, along with all column names and their associated class. They also do not allow partial matching as data frames do.*  
-    #### 10.5.2: Compare and contrast the following operations on a data.frame and equivalent tibble. What is different? Why might the default data frame behaviours cause you frustration?
-```{r 10.5.2a}
+#### 10.5.2: Compare and contrast the following operations on a data.frame and equivalent tibble. What is different? Why might the default data frame behaviours cause you frustration?
+```{r 10.5.2df}
 df <- data.frame(abc = 1, xyz = "a")
-df$x
-df[, "xyz"]
-df[, c("abc", "xyz")]
+df$x #this will draw the row associated with xyz, since data.tables do partial matches, does not label class
+a <- df[, "xyz"] #any row associated with the column named "xyz", does not label class
+#a gives a result that is a factor
+b <- df[, c("abc", "xyz")] #any rows associated with the columns "abc" and "xyz", labels classes
+#b gives a result that is a data.frame
 ```
 
-```{r 10.5.2b}
+```{r 10.5.2tibble}
+tibble <- as_tibble(df)
+tibble$x #because tibbles not have partial matching, this would not give any result. 
+#That's a good thing! Tibbles require specificity, which means that you are less likely to have ambiguous or faulty code.
+c <- tibble %>% select(xyz)
+d <- tibble %>% select(xyz, abc) 
+#Furthermore, as you can see when comparing (ab) to (cd), c and d only return other tibbles. This keeps the class of the data consistent, instead of ending up with scattered variables and factors and vectors.
+```
+
+
+#### 10.5.4: Practice referring to non-syntactic names in the following data frame by:  
+    
+```{r 10.5.4}
+annoying <- tibble(
+  `1` = 1:10,
+  `2` = `1` * 2 + rnorm(length(`1`))
+)
+```
+
+    ##### 1. Extracting the variable called 1.  
+```{r 10.5.4.1}
+annoying %>% select(`1`)
+```
+    
+    ##### 2. Plotting a scatterplot of 1 vs 2.  
+```{r  10.5.4.2}
+annoying %>% ggplot(aes(x = `1`, y = `2`)) +
+  geom_point()
+```
+  
+    ##### 3. Creating a new column called 3 which is 2 divided by 1.  
+```{r  10.5.4.3}
+annoying <- annoying %>%
+  mutate(`3` = `2` / `1`)
+```
+
+    ##### 4. Renaming the columns to one, two and three.  
+```{r  10.5.4.4}
+annoying <- annoying %>%
+  transmute(
+    one = `1`,
+    two = `2`,
+    three = `3`
+  )
+```
+    
+#### 10.5.5: What does tibble::enframe() do? When might you use it?
+```{r}
 
 ```
-    #### 10.5.4  
-
-    #### 10.5.5  
 
 ---
 
