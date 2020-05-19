@@ -406,42 +406,94 @@ summary {
 </div>
 
 
-<pre><code>## Warning: package &#39;tidyverse&#39; was built under R version 3.5.3</code></pre>
-<pre><code>## -- Attaching packages ------------------------------------------------------------------- tidyverse 1.3.0 --</code></pre>
-<pre><code>## v ggplot2 3.2.1     v purrr   0.3.3
-## v tibble  2.1.3     v dplyr   0.8.4
-## v tidyr   1.0.2     v stringr 1.4.0
-## v readr   1.3.1     v forcats 0.4.0</code></pre>
-<pre><code>## Warning: package &#39;ggplot2&#39; was built under R version 3.5.3</code></pre>
-<pre><code>## Warning: package &#39;tibble&#39; was built under R version 3.5.3</code></pre>
-<pre><code>## Warning: package &#39;tidyr&#39; was built under R version 3.5.3</code></pre>
-<pre><code>## Warning: package &#39;readr&#39; was built under R version 3.5.3</code></pre>
-<pre><code>## Warning: package &#39;purrr&#39; was built under R version 3.5.3</code></pre>
-<pre><code>## Warning: package &#39;dplyr&#39; was built under R version 3.5.3</code></pre>
-<pre><code>## Warning: package &#39;stringr&#39; was built under R version 3.5.3</code></pre>
-<pre><code>## Warning: package &#39;forcats&#39; was built under R version 3.5.3</code></pre>
-<pre><code>## -- Conflicts ---------------------------------------------------------------------- tidyverse_conflicts() --
-## x dplyr::filter() masks stats::filter()
-## x dplyr::lag()    masks stats::lag()</code></pre>
 <div id="chapter-10-problems" class="section level2">
 <h2>Chapter 10 Problems</h2>
 <div id="section" class="section level3">
 <h3>10.5</h3>
-<pre><code>#### 10.5.1: How can you tell if an object is a tibble? (Hint: try printing mtcars, which is a regular data frame).  </code></pre>
-<p><em>Tibbles are distinguished from data frames in that, when printed, they display the first 10 rows, along with all column names and their associated class. They also do not allow partial matching as data frames do.</em> #### 10.5.2: Compare and contrast the following operations on a data.frame and equivalent tibble. What is different? Why might the default data frame behaviours cause you frustration?</p>
+<div id="how-can-you-tell-if-an-object-is-a-tibble-hint-try-printing-mtcars-which-is-a-regular-data-frame." class="section level4">
+<h4>10.5.1: How can you tell if an object is a tibble? (Hint: try printing mtcars, which is a regular data frame).</h4>
+<p><em>Tibbles are distinguished from data frames in that, when printed, they display the first 10 rows, along with all column names and their associated class. They also do not allow partial matching as data frames do.</em><br />
+#### 10.5.2: Compare and contrast the following operations on a data.frame and equivalent tibble. What is different? Why might the default data frame behaviours cause you frustration?</p>
 <pre class="r"><code>df &lt;- data.frame(abc = 1, xyz = &quot;a&quot;)
-df$x</code></pre>
+df$x #this will draw the row associated with xyz, since data.tables do partial matches, does not label class</code></pre>
 <pre><code>## [1] a
 ## Levels: a</code></pre>
-<pre class="r"><code>df[, &quot;xyz&quot;]</code></pre>
-<pre><code>## [1] a
-## Levels: a</code></pre>
-<pre class="r"><code>df[, c(&quot;abc&quot;, &quot;xyz&quot;)]</code></pre>
-<pre><code>##   abc xyz
-## 1   1   a</code></pre>
-<pre><code>#### 10.5.4  
-
-#### 10.5.5  </code></pre>
+<pre class="r"><code>a &lt;- df[, &quot;xyz&quot;] #any row associated with the column named &quot;xyz&quot;, does not label class
+#a gives a result that is a factor
+b &lt;- df[, c(&quot;abc&quot;, &quot;xyz&quot;)] #any rows associated with the columns &quot;abc&quot; and &quot;xyz&quot;, labels classes
+#b gives a result that is a data.frame</code></pre>
+<pre class="r"><code>tibble &lt;- as_tibble(df)
+tibble$x #because tibbles not have partial matching, this would not give any result. </code></pre>
+<pre><code>## Warning: Unknown or uninitialised column: &#39;x&#39;.</code></pre>
+<pre><code>## NULL</code></pre>
+<pre class="r"><code>#That&#39;s a good thing! Tibbles require specificity, which means that you are less likely to have ambiguous or faulty code.
+c &lt;- tibble %&gt;% select(xyz)
+d &lt;- tibble %&gt;% select(xyz, abc) 
+#Furthermore, as you can see when comparing (ab) to (cd), c and d only return other tibbles. This keeps the class of the data consistent, instead of ending up with scattered variables and factors and vectors.</code></pre>
+</div>
+</div>
+</div>
+<div id="chapter-10-problems-1" class="section level2">
+<h2>Chapter 10 Problems</h2>
+<div id="practice-referring-to-non-syntactic-names-in-the-following-data-frame-by" class="section level4">
+<h4>10.5.4: Practice referring to non-syntactic names in the following data frame by:</h4>
+<pre class="r"><code>annoying &lt;- tibble(
+  `1` = 1:10,
+  `2` = `1` * 2 + rnorm(length(`1`))
+)</code></pre>
+<pre><code>##### 1. Extracting the variable called 1.  </code></pre>
+<pre class="r"><code>annoying %&gt;% select(`1`)</code></pre>
+<pre><code>## # A tibble: 10 x 1
+##      `1`
+##    &lt;int&gt;
+##  1     1
+##  2     2
+##  3     3
+##  4     4
+##  5     5
+##  6     6
+##  7     7
+##  8     8
+##  9     9
+## 10    10</code></pre>
+<pre><code>##### 2. Plotting a scatterplot of 1 vs 2.  </code></pre>
+<pre class="r"><code>annoying %&gt;% ggplot(aes(x = `1`, y = `2`)) +
+  geom_point()</code></pre>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<pre><code>##### 3. Creating a new column called 3 which is 2 divided by 1.  </code></pre>
+<pre class="r"><code>annoying &lt;- annoying %&gt;%
+  mutate(`3` = `2` / `1`)</code></pre>
+<pre><code>##### 4. Renaming the columns to one, two and three.  </code></pre>
+<pre class="r"><code>annoying &lt;- annoying %&gt;%
+  transmute(
+    one = `1`,
+    two = `2`,
+    three = `3`
+  )</code></pre>
+</div>
+<div id="what-does-tibbleenframe-do-when-might-you-use-it" class="section level4">
+<h4>10.5.5: What does tibble::enframe() do? When might you use it?</h4>
+<pre class="r"><code>enframe(1:3) #unnamed vector should have name column (1,2,3), and then has a value column that is identical</code></pre>
+<pre><code>## # A tibble: 3 x 2
+##    name value
+##   &lt;int&gt; &lt;int&gt;
+## 1     1     1
+## 2     2     2
+## 3     3     3</code></pre>
+<pre class="r"><code>enframe(c(a = 5, b = 7)) #named vector? should have (a,b) in name column, and (5,7) in the next column</code></pre>
+<pre><code>## # A tibble: 2 x 2
+##   name  value
+##   &lt;chr&gt; &lt;dbl&gt;
+## 1 a         5
+## 2 b         7</code></pre>
+<pre class="r"><code>enframe(list(one = 1, two = 2:3, three = 4:6)) #list should have 1 col with (one, two, three), and the value column is a nested tibble that contains whatever values have been listed.</code></pre>
+<pre><code>## # A tibble: 3 x 2
+##   name  value    
+##   &lt;chr&gt; &lt;list&gt;   
+## 1 one   &lt;dbl [1]&gt;
+## 2 two   &lt;int [2]&gt;
+## 3 three &lt;int [3]&gt;</code></pre>
+<pre class="r"><code>#Conclusion: If someone had a vector that they wanted to convert into a tibble for easier viewing, enframe() could be useful. Not sure about why the nested tibble property exists.</code></pre>
 <hr />
 </div>
 </div>
@@ -449,29 +501,109 @@ df$x</code></pre>
 <h2>Chapter 11 Problems</h2>
 <div id="section-1" class="section level3">
 <h3>11.2.2</h3>
-<div id="section-2" class="section level4">
-<h4>11.2.2.1</h4>
+<div id="what-function-would-you-use-to-read-a-file-where-fields-were-separated-with" class="section level4">
+<h4>11.2.2.1: What function would you use to read a file where fields were separated with</h4>
+<p>“|”?<br />
+<em><code>read_delim(delim = &quot;|&quot;)</code></em></p>
 </div>
-<div id="section-3" class="section level4">
-<h4>11.2.2.4</h4>
+<div id="sometimes-strings-in-a-csv-file-contain-commas.-to-prevent-them-from-causing-problems-they-need-to-be-surrounded-by-a-quoting-character-like-or-.-by-default-read_csv-assumes-that-the-quoting-character-will-be-.-what-argument-to-read_csv-do-you-need-to-specify-to-read-the-following-text-into-a-data-frame" class="section level4">
+<h4>11.2.2.4: Sometimes strings in a CSV file contain commas. To prevent them from causing problems they need to be surrounded by a quoting character, like &quot; or ’. By default, read_csv() assumes that the quoting character will be &quot;. What argument to read_csv() do you need to specify to read the following text into a data frame?</h4>
+<pre class="r"><code>read_csv(&quot;x,y\n1,&#39;a,b&#39;&quot;, quote = &quot;&#39;&quot;) #apostraphe</code></pre>
+<pre><code>## # A tibble: 1 x 2
+##       x y    
+##   &lt;dbl&gt; &lt;chr&gt;
+## 1     1 a,b</code></pre>
 </div>
-<div id="section-4" class="section level4">
-<h4>11.2.2.5</h4>
+<div id="identify-what-is-wrong-with-each-of-the-following-inline-csv-files.-what-happens-when-you-run-the-code" class="section level4">
+<h4>11.2.2.5: Identify what is wrong with each of the following inline CSV files. What happens when you run the code?</h4>
+<pre class="r"><code>read_csv(&quot;a,b\n1,2,3\n4,5,6&quot;) #2 column names are given, but there are 3 columns&#39; worth of data here</code></pre>
+<pre><code>## Warning: 2 parsing failures.
+## row col  expected    actual         file
+##   1  -- 2 columns 3 columns literal data
+##   2  -- 2 columns 3 columns literal data</code></pre>
+<pre><code>## # A tibble: 2 x 2
+##       a     b
+##   &lt;dbl&gt; &lt;dbl&gt;
+## 1     1     2
+## 2     4     5</code></pre>
+<pre class="r"><code>read_csv(&quot;a,b,c\n1,2\n1,2,3,4&quot;) #3 col_names given here, but row 1 has 2 values (so c has NA), and row 2 has 4 values (so the last one gets dropped)</code></pre>
+<pre><code>## Warning: 2 parsing failures.
+## row col  expected    actual         file
+##   1  -- 3 columns 2 columns literal data
+##   2  -- 3 columns 4 columns literal data</code></pre>
+<pre><code>## # A tibble: 2 x 3
+##       a     b     c
+##   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+## 1     1     2    NA
+## 2     1     2     3</code></pre>
+<pre class="r"><code>read_csv(&quot;a,b\n\&quot;1&quot;) #2 colnames given, only one value given</code></pre>
+<pre><code>## Warning: 2 parsing failures.
+## row col                     expected    actual         file
+##   1  a  closing quote at end of file           literal data
+##   1  -- 2 columns                    1 columns literal data</code></pre>
+<pre><code>## # A tibble: 1 x 2
+##       a b    
+##   &lt;dbl&gt; &lt;chr&gt;
+## 1     1 &lt;NA&gt;</code></pre>
+<pre class="r"><code>read_csv(&quot;a,b\n1,2\na,b&quot;) #the colnames appear to be repeated in the second row of the tibble</code></pre>
+<pre><code>## # A tibble: 2 x 2
+##   a     b    
+##   &lt;chr&gt; &lt;chr&gt;
+## 1 1     2    
+## 2 a     b</code></pre>
+<pre class="r"><code>read_csv(&quot;a;b\n1;3&quot;) #this data is separated by semicolons, so you should use read_csv2()</code></pre>
+<pre><code>## # A tibble: 1 x 1
+##   `a;b`
+##   &lt;chr&gt;
+## 1 1;3</code></pre>
 </div>
 </div>
-<div id="section-5" class="section level3">
-<h3><strong>11.3.5</strong></h3>
-<div id="section-6" class="section level4">
-<h4>11.3.5.1</h4>
+<div id="section-2" class="section level3">
+<h3>11.3.5</h3>
+<div id="what-are-the-most-important-arguments-to-locale" class="section level4">
+<h4>11.3.5.1: What are the most important arguments to locale()?</h4>
+<p><em><code>decimal_mark</code> and <code>grouping_mark</code> are important for non-date numbers that deviate from the style used in the US.</em> <em><code>encoding</code> is critical with older strings that are encoded with a system other than UTF-8.</em> <em><code>date_names</code> should be used when working with date-times that have non-English month names.</em></p>
 </div>
-<div id="section-7" class="section level4">
-<h4>11.3.5.2</h4>
+<div id="what-happens-if-you-try-and-set-decimal_mark-and-grouping_mark-to-the-same-character-what-happens-to-the-default-value-of-grouping_mark-when-you-set-decimal_mark-to-what-happens-to-the-default-value-of-decimal_mark-when-you-set-the-grouping_mark-to-." class="section level4">
+<h4>11.3.5.2: What happens if you try and set decimal_mark and grouping_mark to the same character? What happens to the default value of grouping_mark when you set decimal_mark to “,”? What happens to the default value of decimal_mark when you set the grouping_mark to “.”?</h4>
+<pre class="r"><code>#parse_number(&quot;123.456.789&quot;, locale = locale(grouping_mark = &quot;.&quot;, decimal_mark = &quot;.&quot;))
+#Result: error given
+#
+parse_number(&quot;123.456.789&quot;, locale = locale(decimal_mark = &quot;,&quot;))</code></pre>
+<pre><code>## [1] 123456789</code></pre>
+<pre class="r"><code>#Result: R infers that if &quot;,&quot; is being used as a decimal mark, then &quot;.&quot; is used as a grouping_mark. Sorry, Switzerland.
+
+parse_number(&quot;123.456.789&quot;, locale = locale(grouping_mark = &quot;.&quot;))</code></pre>
+<pre><code>## [1] 123456789</code></pre>
+<pre class="r"><code>#Result: R infers that &quot;,&quot; is the decimal mark. </code></pre>
 </div>
-<div id="section-8" class="section level4">
-<h4>11.3.5.3</h4>
+<div id="i-didnt-discuss-the-date_format-and-time_format-options-to-locale.-what-do-they-do-construct-an-example-that-shows-when-they-might-be-useful." class="section level4">
+<h4>11.3.5.3: I didn’t discuss the date_format and time_format options to locale(). What do they do? Construct an example that shows when they might be useful.</h4>
+<p><em><code>date_format</code> and <code>time_format</code> are useful for when you data doesn’t follow the default date or time formats; you can customize how R interprets each value so they parse correctly.</em> <em>e.g. default date-time format is year#(XXXX)-month(01-12)#-day#(01-31)-Thour#(0-23)min#(0-59).</em> <em>If we had data with the format hour#(0-12):min#(0-59) (am/pm) month(name)-day(01-31)-year(XXXX), we would have to use something like <code>locale = locale(date_format = &quot;%B/%d/%Y&quot;), time_format = &quot;%I/%M/%p&quot;))</code></em></p>
 </div>
-<div id="section-9" class="section level4">
-<h4>11.3.5.7</h4>
+<div id="generate-the-correct-format-string-to-parse-each-of-the-following-dates-and-times" class="section level4">
+<h4>11.3.5.7: Generate the correct format string to parse each of the following dates and times:</h4>
+<pre class="r"><code>d1 &lt;- &quot;January 1, 2010&quot;
+  parse_date(d1,format = &quot;%B %d, %Y&quot;)</code></pre>
+<pre><code>## [1] &quot;2010-01-01&quot;</code></pre>
+<pre class="r"><code>d2 &lt;- &quot;2015-Mar-07&quot;
+  parse_date(d2, format = &quot;%Y-%b-%d&quot;)</code></pre>
+<pre><code>## [1] &quot;2015-03-07&quot;</code></pre>
+<pre class="r"><code>d3 &lt;- &quot;06-Jun-2017&quot;
+  parse_date(d3, format = &quot;%d-%b-%Y&quot;)</code></pre>
+<pre><code>## [1] &quot;2017-06-06&quot;</code></pre>
+<pre class="r"><code>d4 &lt;- c(&quot;August 19 (2015)&quot;, &quot;July 1 (2015)&quot;)
+  parse_date(d4, format = &quot;%B %d (%Y)&quot;)</code></pre>
+<pre><code>## [1] &quot;2015-08-19&quot; &quot;2015-07-01&quot;</code></pre>
+<pre class="r"><code>d5 &lt;- &quot;12/30/14&quot; # Dec 30, 2014
+  parse_date(d5, &quot;%m/%d/%y&quot;)</code></pre>
+<pre><code>## [1] &quot;2014-12-30&quot;</code></pre>
+<pre class="r"><code>t1 &lt;- &quot;1705&quot;
+  parse_time(t1, &quot;%H%M&quot;)</code></pre>
+<pre><code>## 17:05:00</code></pre>
+<pre class="r"><code>t2 &lt;- &quot;11:15:10.12 PM&quot;
+  parse_time(t2, &quot;%H:%M:%OS %p&quot;)</code></pre>
+<pre><code>## 23:15:10.12</code></pre>
 </div>
 </div>
 </div>
