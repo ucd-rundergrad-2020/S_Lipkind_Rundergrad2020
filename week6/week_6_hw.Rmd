@@ -1,0 +1,128 @@
+---
+title: "Week 6 HW"
+author: "Sofya Lipkind"
+date: "5/20/2020"
+output: 
+  html_document: 
+    highlight: pygments
+    keep_md: yes
+    theme: yeti
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+```{r problem tables, eval=FALSE, include=FALSE}
+table1
+#> # A tibble: 6 x 4
+#>   country      year  cases population
+#>   <chr>       <int>  <int>      <int>
+#> 1 Afghanistan  1999    745   19987071
+#> 2 Afghanistan  2000   2666   20595360
+#> 3 Brazil       1999  37737  172006362
+#> 4 Brazil       2000  80488  174504898
+#> 5 China        1999 212258 1272915272
+#> 6 China        2000 213766 1280428583
+table2
+#> # A tibble: 12 x 4
+#>   country      year type           count
+#>   <chr>       <int> <chr>          <int>
+#> 1 Afghanistan  1999 cases            745
+#> 2 Afghanistan  1999 population  19987071
+#> 3 Afghanistan  2000 cases           2666
+#> 4 Afghanistan  2000 population  20595360
+#> 5 Brazil       1999 cases          37737
+#> 6 Brazil       1999 population 172006362
+#> # … with 6 more rows
+table3
+#> # A tibble: 6 x 3
+#>   country      year rate             
+#> * <chr>       <int> <chr>            
+#> 1 Afghanistan  1999 745/19987071     
+#> 2 Afghanistan  2000 2666/20595360    
+#> 3 Brazil       1999 37737/172006362  
+#> 4 Brazil       2000 80488/174504898  
+#> 5 China        1999 212258/1272915272
+#> 6 China        2000 213766/1280428583
+
+# Spread across two tibbles
+table4a  # cases
+#> # A tibble: 3 x 3
+#>   country     `1999` `2000`
+#> * <chr>        <int>  <int>
+#> 1 Afghanistan    745   2666
+#> 2 Brazil       37737  80488
+#> 3 China       212258 213766
+table4b  # population
+#> # A tibble: 3 x 3
+#>   country         `1999`     `2000`
+#> * <chr>            <int>      <int>
+#> 1 Afghanistan   19987071   20595360
+#> 2 Brazil       172006362  174504898
+#> 3 China       1272915272 1280428583
+```
+
+## Chapter 12 Problems
+
+### 12.2.1
+
+ 2. Compute the rate for table2, and table4a + table4b. You will need to perform four operations: 
+ 
+    + Extract the number of TB cases per country per year.  
+    + Extract the matching population per country per year.  
+    + Divide cases by population, and multiply by 10000.  
+    + Store back in the appropriate place.  
+```{r}
+#table2
+data(table2)
+table2_cases<- table2 %>%
+  spread(type, count) %>%
+  mutate(rate = cases / population * 10000) %>%
+  print()
+```
+```{r}
+#table4a + 4b = 4c
+
+table4 <- inner_join(table4a, table4b, by = "country") %>%
+  gather(year, cases, c(`1999.x`, `2000.x`)) %>%
+  gather(year, population, c(`1999.y`, `2000.y`)) %>%
+  mutate(rate = cases / population * 10000) %>%
+#  gsub(".y","", table4$year) %>%      Why does including this line get rid of all other information?
+  print()
+
+#gsub(".y","", table4$year)
+```
+
+Which representation is easiest to work with? Which is hardest? Why?  
+*Both of them sucked. How are you supposed to do these without knowing gather() and spread()?*
+*I suppose Table 4 was harder, since I had to join them before I could do anything else, and then separate . Then again, if I didn't have spread, I would have hated 2 a lot, as well.*
+
+ 3. Recreate the plot showing change in cases over time using table2 instead of table1. What do you need to do first?
+ 
+
+### 12.3.3
+
+ 1. 
+
+ 2. 
+
+ 3. 
+
+ 4. 
+
+### 12.4.3
+
+ 1. 
+
+ 2. 
+
+ 3. 
+
+### 12.6.1
+
+ 3. 
+
+ 4. 
+
