@@ -176,6 +176,14 @@ people <- as_tibble(tribble(
 # oh dang, a tribble, f that noise, I don't want to deal with formulas
 # Phillip Woods has two ages??
 
+f_it <- as.data.frame(people)
+f_it[3,2] = "age2"
+print(f_it)
+
+f_it <- as_tibble(f_it) %>%
+  spread(names,name) %>%
+  print()
+
 people %>%
   group_by(name,names) %>%
   mutate(count = count(names)) %>%
