@@ -77,10 +77,10 @@ table4b  # population
 ```{r}
 #table2
 data(table2)
-table2_cases<- table2 %>%
+table2_cases <- table2 %>%
   spread(type, count) %>%
-  mutate(rate = cases / population * 10000) %>%
-  print()
+  mutate(rate = cases / population * 10000)
+print(table2_cases)
 ```
 ```{r}
 #table4a + 4b = 4c
@@ -100,15 +100,95 @@ Which representation is easiest to work with? Which is hardest? Why?
 *I suppose Table 4 was harder, since I had to join them before I could do anything else, and then separate . Then again, if I didn't have spread, I would have hated 2 a lot, as well.*
 
  3. Recreate the plot showing change in cases over time using table2 instead of table1. What do you need to do first?
- 
+```{r}
+#> # A tibble: 12 x 4
+#>   country      year type           count
+#>   <chr>       <int> <chr>          <int>
+#> 1 Afghanistan  1999 cases            745
+#> 2 Afghanistan  1999 population  19987071
+#> 3 Afghanistan  2000 cases           2666
+#> 4 Afghanistan  2000 population  20595360
+#> 5 Brazil       1999 cases          37737
+#> 6 Brazil       1999 population 172006362
+#> # … with 6 more rows
+
+#option 1: without using tidied data frame
+table2.3 <- table2 %>%
+  filter(type == "cases") #need to filter out population first
+
+ggplot(table2.3, aes(year, count)) +
+  geom_line(aes(group = country)) +
+  geom_point(color  = country)
+```
+```{r}
+#option 2: using tidied data frame
+table2_cases %>% ggplot(aes(year, cases)) +
+  geom_line(aes(group = country)) +
+  geom_point(aes(color  = country))
+```
 
 ### 12.3.3
 
- 1. 
+ 1. Why are pivot_longer() and pivot_wider() not perfectly symmetrical? Carefully consider the following example:
+```{r}
+stocks <- tibble(
+  year   = c(2015, 2015, 2016, 2016),
+  half  = c(   1,    2,     1,    2),
+  return = c(1.88, 0.59, 0.92, 0.17)
+)
+print(stocks)
+stocks %>% 
+  pivot_wider(names_from = year, values_from = return) %>% 
+  pivot_longer(`2015`:`2016`, names_to = "year", values_to = "return")
+```
+*Oh, that's interesting! In the original tibble (stocks), the `year` column is of class **double**, whereas once the OG tibble has been passed through wider -> longer, `year` is now of class **character**.*
+*If one wanted to return `year` to the prior state, you would have to perform the extra step of parsing it.*
+pivot_longer() has a names_ptype argument, e.g. names_ptype = list(year = double()). What does it do?
+```{r}
+stocks %>% 
+  pivot_wider(names_from = year, values_from = return) %>% 
+  pivot_longer(`2015`:`2016`, names_to = "year", values_to = "return", names_ptypes = list(year = double()))
+```
+*It apparently eliminates the need to parse after performing a round of ~~spreading~~ pivoting wider and ~~gathering~~ pivoting longer.*
 
- 2. 
+ 2. Why does this code fail?  
+```{r}
+#table4a %>% 
+#  pivot_longer(c(1999, 2000), names_to = "year", values_to = "cases")
+```
+*You forgot the tickmarks for non-syntactic column names, ya dingus!*
+```{r}
+table4a %>% 
+  pivot_longer(c(`1999`, `2000`), names_to = "year", values_to = "cases")
+```
 
- 3. 
+ 3. What would happen if you widen this table? Why? How could you add a new column to uniquely identify each value?
+```{r}
+people <- as_tibble(tribble(
+  ~name,             ~names,  ~values,
+  #-----------------|--------|------
+  "Phillip Woods",   "age",       45, #age 1
+  "Phillip Woods",   "height",   186,
+  "Phillip Woods",   "age",       50, #age 2
+  "Jessica Cordero", "age",       37,
+  "Jessica Cordero", "height",   156
+))
+# oh dang, a tribble, f that noise, I don't want to deal with formulas
+# Phillip Woods has two ages??
+
+people %>%
+  group_by(name,names) %>%
+  mutate(count = count(names)) %>%
+  print()
+
+people_height <- as_tibble(people) %>%
+  unite(names_values,c(names,values), sep = "_", na.rm = FALSE) %>%
+  spread(name,names_values) %>%
+ # pivot_longer(c(age_37,age_45,age_50), names_to = "age", values_to = "age_name") %>%
+  #pivot_longer(c(height_156,height_186), names_to = "height", values_to = "height_name") %>%
+  print()
+  
+```
 
  4. 
 
