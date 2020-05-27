@@ -481,10 +481,10 @@ summary {
 </ol>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" title="1"><span class="co">#table2</span></a>
 <a class="sourceLine" id="cb1-2" title="2"><span class="kw">data</span>(table2)</a>
-<a class="sourceLine" id="cb1-3" title="3">table2_cases&lt;-<span class="st"> </span>table2 <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb1-3" title="3">table2_cases &lt;-<span class="st"> </span>table2 <span class="op">%&gt;%</span></a>
 <a class="sourceLine" id="cb1-4" title="4"><span class="st">  </span><span class="kw">spread</span>(type, count) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb1-5" title="5"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">rate =</span> cases <span class="op">/</span><span class="st"> </span>population <span class="op">*</span><span class="st"> </span><span class="dv">10000</span>) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb1-6" title="6"><span class="st">  </span><span class="kw">print</span>()</a></code></pre></div>
+<a class="sourceLine" id="cb1-5" title="5"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">rate =</span> cases <span class="op">/</span><span class="st"> </span>population <span class="op">*</span><span class="st"> </span><span class="dv">10000</span>)</a>
+<a class="sourceLine" id="cb1-6" title="6"><span class="kw">print</span>(table2_cases)</a></code></pre></div>
 <pre><code>## # A tibble: 6 x 5
 ##   country      year  cases population  rate
 ##   &lt;chr&gt;       &lt;int&gt;  &lt;int&gt;      &lt;int&gt; &lt;dbl&gt;
@@ -523,30 +523,268 @@ summary {
 <ol start="3" style="list-style-type: decimal">
 <li>Recreate the plot showing change in cases over time using table2 instead of table1. What do you need to do first?</li>
 </ol>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" title="1"><span class="co">#&gt; # A tibble: 12 x 4</span></a>
+<a class="sourceLine" id="cb6-2" title="2"><span class="co">#&gt;   country      year type           count</span></a>
+<a class="sourceLine" id="cb6-3" title="3"><span class="co">#&gt;   &lt;chr&gt;       &lt;int&gt; &lt;chr&gt;          &lt;int&gt;</span></a>
+<a class="sourceLine" id="cb6-4" title="4"><span class="co">#&gt; 1 Afghanistan  1999 cases            745</span></a>
+<a class="sourceLine" id="cb6-5" title="5"><span class="co">#&gt; 2 Afghanistan  1999 population  19987071</span></a>
+<a class="sourceLine" id="cb6-6" title="6"><span class="co">#&gt; 3 Afghanistan  2000 cases           2666</span></a>
+<a class="sourceLine" id="cb6-7" title="7"><span class="co">#&gt; 4 Afghanistan  2000 population  20595360</span></a>
+<a class="sourceLine" id="cb6-8" title="8"><span class="co">#&gt; 5 Brazil       1999 cases          37737</span></a>
+<a class="sourceLine" id="cb6-9" title="9"><span class="co">#&gt; 6 Brazil       1999 population 172006362</span></a>
+<a class="sourceLine" id="cb6-10" title="10"><span class="co">#&gt; # … with 6 more rows</span></a>
+<a class="sourceLine" id="cb6-11" title="11"></a>
+<a class="sourceLine" id="cb6-12" title="12"><span class="co">#option 1: without using tidied data frame</span></a>
+<a class="sourceLine" id="cb6-13" title="13">table2<span class="fl">.3</span> &lt;-<span class="st"> </span>table2 <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb6-14" title="14"><span class="st">  </span><span class="kw">filter</span>(type <span class="op">==</span><span class="st"> &quot;cases&quot;</span>) <span class="co">#need to filter out population first</span></a>
+<a class="sourceLine" id="cb6-15" title="15"></a>
+<a class="sourceLine" id="cb6-16" title="16"><span class="kw">ggplot</span>(table2<span class="fl">.3</span>, <span class="kw">aes</span>(year, count)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb6-17" title="17"><span class="st">  </span><span class="kw">geom_line</span>(<span class="kw">aes</span>(<span class="dt">group =</span> country)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb6-18" title="18"><span class="st">  </span><span class="kw">geom_point</span>(<span class="kw">aes</span>(<span class="dt">color  =</span> country))</a></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" title="1"><span class="co">#option 2: using tidied data frame</span></a>
+<a class="sourceLine" id="cb7-2" title="2">table2_cases <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(year, cases)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb7-3" title="3"><span class="st">  </span><span class="kw">geom_line</span>(<span class="kw">aes</span>(<span class="dt">group =</span> country)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb7-4" title="4"><span class="st">  </span><span class="kw">geom_point</span>(<span class="kw">aes</span>(<span class="dt">color  =</span> country))</a></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
 </div>
 <div id="section-1" class="section level3">
 <h3>12.3.3</h3>
 <ol style="list-style-type: decimal">
-<li></li>
-<li></li>
-<li></li>
-<li></li>
+<li>Why are pivot_longer() and pivot_wider() not perfectly symmetrical? Carefully consider the following example:</li>
 </ol>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" title="1">stocks &lt;-<span class="st"> </span><span class="kw">tibble</span>(</a>
+<a class="sourceLine" id="cb8-2" title="2">  <span class="dt">year   =</span> <span class="kw">c</span>(<span class="dv">2015</span>, <span class="dv">2015</span>, <span class="dv">2016</span>, <span class="dv">2016</span>),</a>
+<a class="sourceLine" id="cb8-3" title="3">  <span class="dt">half  =</span> <span class="kw">c</span>(   <span class="dv">1</span>,    <span class="dv">2</span>,     <span class="dv">1</span>,    <span class="dv">2</span>),</a>
+<a class="sourceLine" id="cb8-4" title="4">  <span class="dt">return =</span> <span class="kw">c</span>(<span class="fl">1.88</span>, <span class="fl">0.59</span>, <span class="fl">0.92</span>, <span class="fl">0.17</span>)</a>
+<a class="sourceLine" id="cb8-5" title="5">)</a>
+<a class="sourceLine" id="cb8-6" title="6"><span class="kw">print</span>(stocks)</a></code></pre></div>
+<pre><code>## # A tibble: 4 x 3
+##    year  half return
+##   &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;
+## 1  2015     1   1.88
+## 2  2015     2   0.59
+## 3  2016     1   0.92
+## 4  2016     2   0.17</code></pre>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" title="1">stocks <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb10-2" title="2"><span class="st">  </span><span class="kw">pivot_wider</span>(<span class="dt">names_from =</span> year, <span class="dt">values_from =</span> return) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb10-3" title="3"><span class="st">  </span><span class="kw">pivot_longer</span>(<span class="st">`</span><span class="dt">2015</span><span class="st">`</span><span class="op">:</span><span class="st">`</span><span class="dt">2016</span><span class="st">`</span>, <span class="dt">names_to =</span> <span class="st">&quot;year&quot;</span>, <span class="dt">values_to =</span> <span class="st">&quot;return&quot;</span>)</a></code></pre></div>
+<pre><code>## # A tibble: 4 x 3
+##    half year  return
+##   &lt;dbl&gt; &lt;chr&gt;  &lt;dbl&gt;
+## 1     1 2015    1.88
+## 2     1 2016    0.92
+## 3     2 2015    0.59
+## 4     2 2016    0.17</code></pre>
+<p><em>Oh, that’s interesting! In the original tibble (stocks), the <code>year</code> column is of class <strong>double</strong>, whereas once the OG tibble has been passed through wider -&gt; longer, <code>year</code> is now of class <strong>character</strong>.</em> <em>If one wanted to return <code>year</code> to the prior state, you would have to perform the extra step of parsing it.</em><br />
+pivot_longer() has a names_ptype argument, e.g. names_ptype = list(year = double()). What does it do?</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" title="1">stocks <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb12-2" title="2"><span class="st">  </span><span class="kw">pivot_wider</span>(<span class="dt">names_from =</span> year, <span class="dt">values_from =</span> return) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb12-3" title="3"><span class="st">  </span><span class="kw">pivot_longer</span>(<span class="st">`</span><span class="dt">2015</span><span class="st">`</span><span class="op">:</span><span class="st">`</span><span class="dt">2016</span><span class="st">`</span>, <span class="dt">names_to =</span> <span class="st">&quot;year&quot;</span>, <span class="dt">values_to =</span> <span class="st">&quot;return&quot;</span>, <span class="dt">names_ptypes =</span> <span class="kw">list</span>(<span class="dt">year =</span> <span class="kw">double</span>()))</a></code></pre></div>
+<pre><code>## # A tibble: 4 x 3
+##    half  year return
+##   &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;
+## 1     1  2015   1.88
+## 2     1  2016   0.92
+## 3     2  2015   0.59
+## 4     2  2016   0.17</code></pre>
+<p><em>It apparently eliminates the need to parse after performing a round of <del>spreading</del> pivoting wider and <del>gathering</del> pivoting longer.</em></p>
+<ol start="2" style="list-style-type: decimal">
+<li>Why does this code fail?</li>
+</ol>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" title="1"><span class="co">#table4a %&gt;% </span></a>
+<a class="sourceLine" id="cb14-2" title="2"><span class="co">#  pivot_longer(c(1999, 2000), names_to = &quot;year&quot;, values_to = &quot;cases&quot;)</span></a></code></pre></div>
+<p><em>You forgot the tickmarks for non-syntactic column names, ya dingus!</em></p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb15-1" title="1">table4a <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb15-2" title="2"><span class="st">  </span><span class="kw">pivot_longer</span>(<span class="kw">c</span>(<span class="st">`</span><span class="dt">1999</span><span class="st">`</span>, <span class="st">`</span><span class="dt">2000</span><span class="st">`</span>), <span class="dt">names_to =</span> <span class="st">&quot;year&quot;</span>, <span class="dt">values_to =</span> <span class="st">&quot;cases&quot;</span>)</a></code></pre></div>
+<pre><code>## # A tibble: 6 x 3
+##   country     year   cases
+##   &lt;chr&gt;       &lt;chr&gt;  &lt;int&gt;
+## 1 Afghanistan 1999     745
+## 2 Afghanistan 2000    2666
+## 3 Brazil      1999   37737
+## 4 Brazil      2000   80488
+## 5 China       1999  212258
+## 6 China       2000  213766</code></pre>
+<ol start="3" style="list-style-type: decimal">
+<li>What would happen if you widen this table? Why? How could you add a new column to uniquely identify each value? <em>(absolute nightmare question)</em></li>
+</ol>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb17-1" title="1">people &lt;-<span class="st"> </span><span class="kw">as_tibble</span>(<span class="kw">tribble</span>(</a>
+<a class="sourceLine" id="cb17-2" title="2">  <span class="op">~</span>name,             <span class="op">~</span>names,  <span class="op">~</span>values,</a>
+<a class="sourceLine" id="cb17-3" title="3">  <span class="co">#-----------------|--------|------</span></a>
+<a class="sourceLine" id="cb17-4" title="4">  <span class="st">&quot;Phillip Woods&quot;</span>,   <span class="st">&quot;age&quot;</span>,       <span class="dv">45</span>, <span class="co">#age 1</span></a>
+<a class="sourceLine" id="cb17-5" title="5">  <span class="st">&quot;Phillip Woods&quot;</span>,   <span class="st">&quot;height&quot;</span>,   <span class="dv">186</span>,</a>
+<a class="sourceLine" id="cb17-6" title="6">  <span class="st">&quot;Phillip Woods&quot;</span>,   <span class="st">&quot;age&quot;</span>,       <span class="dv">50</span>, <span class="co">#age 2</span></a>
+<a class="sourceLine" id="cb17-7" title="7">  <span class="st">&quot;Jessica Cordero&quot;</span>, <span class="st">&quot;age&quot;</span>,       <span class="dv">37</span>,</a>
+<a class="sourceLine" id="cb17-8" title="8">  <span class="st">&quot;Jessica Cordero&quot;</span>, <span class="st">&quot;height&quot;</span>,   <span class="dv">156</span></a>
+<a class="sourceLine" id="cb17-9" title="9">))</a>
+<a class="sourceLine" id="cb17-10" title="10"></a>
+<a class="sourceLine" id="cb17-11" title="11">f_it &lt;-<span class="st"> </span><span class="kw">as.data.frame</span>(people)</a>
+<a class="sourceLine" id="cb17-12" title="12">f_it[<span class="dv">3</span>,<span class="dv">2</span>] =<span class="st"> &quot;age2&quot;</span></a>
+<a class="sourceLine" id="cb17-13" title="13"><span class="kw">print</span>(f_it)</a></code></pre></div>
+<pre><code>##              name  names values
+## 1   Phillip Woods    age     45
+## 2   Phillip Woods height    186
+## 3   Phillip Woods   age2     50
+## 4 Jessica Cordero    age     37
+## 5 Jessica Cordero height    156</code></pre>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb19-1" title="1">f_it &lt;-<span class="st"> </span><span class="kw">as_tibble</span>(f_it) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb19-2" title="2"><span class="st">  </span><span class="kw">spread</span>(names,name) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb19-3" title="3"><span class="st">  </span><span class="kw">print</span>()</a></code></pre></div>
+<pre><code>## # A tibble: 5 x 4
+##   values age             age2          height         
+##    &lt;dbl&gt; &lt;chr&gt;           &lt;chr&gt;         &lt;chr&gt;          
+## 1     37 Jessica Cordero &lt;NA&gt;          &lt;NA&gt;           
+## 2     45 Phillip Woods   &lt;NA&gt;          &lt;NA&gt;           
+## 3     50 &lt;NA&gt;            Phillip Woods &lt;NA&gt;           
+## 4    156 &lt;NA&gt;            &lt;NA&gt;          Jessica Cordero
+## 5    186 &lt;NA&gt;            &lt;NA&gt;          Phillip Woods</code></pre>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb21-1" title="1"><span class="co">#people %&gt;%</span></a>
+<a class="sourceLine" id="cb21-2" title="2"><span class="co">#  group_by(names) %&gt;%</span></a>
+<a class="sourceLine" id="cb21-3" title="3"><span class="co">#  mutate(group_id &lt;- group_indices(values)) %&gt;%</span></a>
+<a class="sourceLine" id="cb21-4" title="4"><span class="co">#  print()</span></a></code></pre></div>
+<ol start="4" style="list-style-type: decimal">
+<li>Tidy the simple tibble below. Do you need to make it wider or longer? What are the variables?</li>
+</ol>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb22-1" title="1">preg &lt;-<span class="st"> </span><span class="kw">tribble</span>(</a>
+<a class="sourceLine" id="cb22-2" title="2">  <span class="op">~</span>pregnant, <span class="op">~</span>male, <span class="op">~</span>female,</a>
+<a class="sourceLine" id="cb22-3" title="3">  <span class="st">&quot;yes&quot;</span>,     <span class="ot">NA</span>,    <span class="dv">10</span>,</a>
+<a class="sourceLine" id="cb22-4" title="4">  <span class="st">&quot;no&quot;</span>,      <span class="dv">20</span>,    <span class="dv">12</span></a>
+<a class="sourceLine" id="cb22-5" title="5">)</a>
+<a class="sourceLine" id="cb22-6" title="6"></a>
+<a class="sourceLine" id="cb22-7" title="7">preggo &lt;-<span class="st"> </span><span class="kw">as_tibble</span>(preg) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb22-8" title="8"><span class="st">  </span><span class="kw">pivot_longer</span>(<span class="kw">c</span>(<span class="st">&quot;male&quot;</span>,<span class="st">&quot;female&quot;</span>), <span class="dt">names_to =</span> <span class="st">&quot;gender&quot;</span>, <span class="dt">values_to =</span> <span class="st">&quot;count&quot;</span>) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb22-9" title="9"><span class="st">  </span><span class="kw">select</span>(gender, pregnant, count) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb22-10" title="10"><span class="st">  </span><span class="kw">print</span>()</a></code></pre></div>
+<pre><code>## # A tibble: 4 x 3
+##   gender pregnant count
+##   &lt;chr&gt;  &lt;chr&gt;    &lt;dbl&gt;
+## 1 male   yes         NA
+## 2 female yes         10
+## 3 male   no          20
+## 4 female no          12</code></pre>
 </div>
 <div id="section-2" class="section level3">
 <h3>12.4.3</h3>
 <ol style="list-style-type: decimal">
-<li></li>
-<li></li>
-<li></li>
+<li>What do the extra and fill arguments do in separate()? Experiment with the various options for the following two toy datasets.</li>
 </ol>
-</div>
-<div id="section-3" class="section level3">
-<h3>12.6.1</h3>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb24-1" title="1"><span class="co">#extra options : warn(default), drop, merge(length(into))</span></a>
+<a class="sourceLine" id="cb24-2" title="2"><span class="co">##fill options : warn(emit warning and fill from right), right(fill with missing values on right), left(fill with missing vlues on left)</span></a>
+<a class="sourceLine" id="cb24-3" title="3"></a>
+<a class="sourceLine" id="cb24-4" title="4"><span class="kw">tibble</span>(<span class="dt">x =</span> <span class="kw">c</span>(<span class="st">&quot;a,b,c&quot;</span>, <span class="st">&quot;d,e,f,g&quot;</span>, <span class="st">&quot;h,i,j&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span><span class="co">#one row has an extra data point</span></a>
+<a class="sourceLine" id="cb24-5" title="5"><span class="st">  </span><span class="kw">separate</span>(x, <span class="kw">c</span>(<span class="st">&quot;one&quot;</span>, <span class="st">&quot;two&quot;</span>, <span class="st">&quot;three&quot;</span>))</a></code></pre></div>
+<pre><code>## Warning: Expected 3 pieces. Additional pieces discarded in 1 rows [2].</code></pre>
+<pre><code>## # A tibble: 3 x 3
+##   one   two   three
+##   &lt;chr&gt; &lt;chr&gt; &lt;chr&gt;
+## 1 a     b     c    
+## 2 d     e     f    
+## 3 h     i     j</code></pre>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb27-1" title="1"><span class="co">#becomes</span></a>
+<a class="sourceLine" id="cb27-2" title="2"><span class="kw">tibble</span>(<span class="dt">x =</span> <span class="kw">c</span>(<span class="st">&quot;a,b,c&quot;</span>, <span class="st">&quot;d,e,f,g&quot;</span>, <span class="st">&quot;h,i,j&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span><span class="co">#one row has an extra data point</span></a>
+<a class="sourceLine" id="cb27-3" title="3"><span class="st">  </span><span class="kw">separate</span>(x, <span class="kw">c</span>(<span class="st">&quot;one&quot;</span>, <span class="st">&quot;two&quot;</span>, <span class="st">&quot;three&quot;</span>), <span class="dt">extra =</span> <span class="st">&quot;merge&quot;</span>)</a></code></pre></div>
+<pre><code>## # A tibble: 3 x 3
+##   one   two   three
+##   &lt;chr&gt; &lt;chr&gt; &lt;chr&gt;
+## 1 a     b     c    
+## 2 d     e     f,g  
+## 3 h     i     j</code></pre>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb29-1" title="1"><span class="co">#fill makes no difference here b/c no empty values</span></a></code></pre></div>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb30-1" title="1"><span class="kw">tibble</span>(<span class="dt">x =</span> <span class="kw">c</span>(<span class="st">&quot;a,b,c&quot;</span>, <span class="st">&quot;d,e&quot;</span>, <span class="st">&quot;f,g,i&quot;</span>)) <span class="op">%&gt;%</span><span class="st">  </span><span class="co">#one row lacks a data point</span></a>
+<a class="sourceLine" id="cb30-2" title="2"><span class="st">  </span><span class="kw">separate</span>(x, <span class="kw">c</span>(<span class="st">&quot;one&quot;</span>, <span class="st">&quot;two&quot;</span>, <span class="st">&quot;three&quot;</span>))</a></code></pre></div>
+<pre><code>## Warning: Expected 3 pieces. Missing pieces filled with `NA` in 1 rows [2].</code></pre>
+<pre><code>## # A tibble: 3 x 3
+##   one   two   three
+##   &lt;chr&gt; &lt;chr&gt; &lt;chr&gt;
+## 1 a     b     c    
+## 2 d     e     &lt;NA&gt; 
+## 3 f     g     i</code></pre>
+<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb33-1" title="1"><span class="co">#becomes</span></a>
+<a class="sourceLine" id="cb33-2" title="2"><span class="kw">tibble</span>(<span class="dt">x =</span> <span class="kw">c</span>(<span class="st">&quot;a,b,c&quot;</span>, <span class="st">&quot;d,e&quot;</span>, <span class="st">&quot;f,g,i&quot;</span>)) <span class="op">%&gt;%</span><span class="st">  </span><span class="co">#one row lacks a data point</span></a>
+<a class="sourceLine" id="cb33-3" title="3"><span class="st">  </span><span class="kw">separate</span>(x, <span class="kw">c</span>(<span class="st">&quot;one&quot;</span>, <span class="st">&quot;two&quot;</span>, <span class="st">&quot;three&quot;</span>), <span class="dt">fill =</span> <span class="st">&quot;left&quot;</span>) <span class="co">#NA shifted to right (no effect if fill = &quot;right)</span></a></code></pre></div>
+<pre><code>## # A tibble: 3 x 3
+##   one   two   three
+##   &lt;chr&gt; &lt;chr&gt; &lt;chr&gt;
+## 1 a     b     c    
+## 2 &lt;NA&gt;  d     e    
+## 3 f     g     i</code></pre>
+<ol start="2" style="list-style-type: decimal">
+<li>Both unite() and separate() have a remove argument<em>(defaults to TRUE)</em>. What does it do? Why would you set it to FALSE?</li>
+</ol>
+<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb35-1" title="1"><span class="kw">tibble</span>(<span class="dt">x =</span> <span class="kw">c</span>(<span class="st">&quot;a,b,c&quot;</span>, <span class="st">&quot;d,e&quot;</span>, <span class="st">&quot;f,g,i&quot;</span>)) <span class="op">%&gt;%</span><span class="st">  </span><span class="co">#one row lacks a data point</span></a>
+<a class="sourceLine" id="cb35-2" title="2"><span class="st">  </span><span class="kw">separate</span>(x, <span class="kw">c</span>(<span class="st">&quot;one&quot;</span>, <span class="st">&quot;two&quot;</span>, <span class="st">&quot;three&quot;</span>), <span class="dt">remove =</span> <span class="ot">FALSE</span>)</a></code></pre></div>
+<pre><code>## Warning: Expected 3 pieces. Missing pieces filled with `NA` in 1 rows [2].</code></pre>
+<pre><code>## # A tibble: 3 x 4
+##   x     one   two   three
+##   &lt;chr&gt; &lt;chr&gt; &lt;chr&gt; &lt;chr&gt;
+## 1 a,b,c a     b     c    
+## 2 d,e   d     e     &lt;NA&gt; 
+## 3 f,g,i f     g     i</code></pre>
+<p><em><code>remove</code> allows one to remove a column describing the contents of each row of the original tibble.</em><br />
+<em>Ordinarily, this is useful to remove unnecessary clutter.</em><br />
+<em>Setting <code>remove = FALSE</code> could be helpful for someone to check if they separated their observations correctly.</em></p>
 <ol start="3" style="list-style-type: decimal">
-<li></li>
-<li></li>
+<li>Compare and contrast separate() and extract(). Why are there three variations of separation (by position, by separator, and with groups), but only one unite?<br />
+<em><code>extract()</code> appears to separate with an additional option to separate according to a regex pattern, which could allow one to cleave cells with a complex pattern that couldn’t be caught with <code>separate()</code>.</em> <em>If one had a sentence as an observation, they could separate it in any number of ways (by each letter, each space, by clauses, by SOV), but one can only unite the sentence correctly one way.</em><br />
+### 12.6.1</li>
 </ol>
+<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb38-1" title="1"><span class="co">#relevant dataset</span></a>
+<a class="sourceLine" id="cb38-2" title="2"><span class="kw">data</span>(who)</a>
+<a class="sourceLine" id="cb38-3" title="3">whom &lt;-<span class="st"> </span>who <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb38-4" title="4"><span class="st">  </span><span class="kw">pivot_longer</span>(</a>
+<a class="sourceLine" id="cb38-5" title="5">    <span class="dt">cols =</span> new_sp_m014<span class="op">:</span>newrel_f65, </a>
+<a class="sourceLine" id="cb38-6" title="6">    <span class="dt">names_to =</span> <span class="st">&quot;key&quot;</span>, </a>
+<a class="sourceLine" id="cb38-7" title="7">    <span class="dt">values_to =</span> <span class="st">&quot;cases&quot;</span>, </a>
+<a class="sourceLine" id="cb38-8" title="8">    <span class="dt">values_drop_na =</span> <span class="ot">TRUE</span></a>
+<a class="sourceLine" id="cb38-9" title="9">  ) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb38-10" title="10"><span class="st">  </span><span class="kw">mutate</span>(</a>
+<a class="sourceLine" id="cb38-11" title="11">    <span class="dt">key =</span> stringr<span class="op">::</span><span class="kw">str_replace</span>(key, <span class="st">&quot;newrel&quot;</span>, <span class="st">&quot;new_rel&quot;</span>)</a>
+<a class="sourceLine" id="cb38-12" title="12">  ) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb38-13" title="13"><span class="st">  </span><span class="kw">separate</span>(key, <span class="kw">c</span>(<span class="st">&quot;new&quot;</span>, <span class="st">&quot;var&quot;</span>, <span class="st">&quot;sexage&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb38-14" title="14"><span class="st">  </span><span class="kw">select</span>(<span class="op">-</span>new, <span class="op">-</span>iso2, <span class="op">-</span>iso3) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb38-15" title="15"><span class="st">  </span><span class="kw">separate</span>(sexage, <span class="kw">c</span>(<span class="st">&quot;sex&quot;</span>, <span class="st">&quot;age&quot;</span>), <span class="dt">sep =</span> <span class="dv">1</span>) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb38-16" title="16"><span class="st">  </span><span class="kw">print</span>()</a></code></pre></div>
+<pre><code>## # A tibble: 76,046 x 6
+##    country      year var   sex   age   cases
+##    &lt;chr&gt;       &lt;int&gt; &lt;chr&gt; &lt;chr&gt; &lt;chr&gt; &lt;int&gt;
+##  1 Afghanistan  1997 sp    m     014       0
+##  2 Afghanistan  1997 sp    m     1524     10
+##  3 Afghanistan  1997 sp    m     2534      6
+##  4 Afghanistan  1997 sp    m     3544      3
+##  5 Afghanistan  1997 sp    m     4554      5
+##  6 Afghanistan  1997 sp    m     5564      2
+##  7 Afghanistan  1997 sp    m     65        0
+##  8 Afghanistan  1997 sp    f     014       5
+##  9 Afghanistan  1997 sp    f     1524     38
+## 10 Afghanistan  1997 sp    f     2534     36
+## # ... with 76,036 more rows</code></pre>
+<ol start="3" style="list-style-type: decimal">
+<li>I claimed that iso2 and iso3 were redundant with country. Confirm this claim.</li>
+</ol>
+<div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb40-1" title="1"><span class="co">#count unique values for each column (status = weak evidence)</span></a>
+<a class="sourceLine" id="cb40-2" title="2">  <span class="kw">summary</span>(<span class="kw">unique</span>(who<span class="op">$</span>country)) <span class="co">#219</span></a></code></pre></div>
+<pre><code>##    Length     Class      Mode 
+##       219 character character</code></pre>
+<div class="sourceCode" id="cb42"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb42-1" title="1">  <span class="kw">summary</span>(<span class="kw">unique</span>(who<span class="op">$</span>iso2)) <span class="co">#219</span></a></code></pre></div>
+<pre><code>##    Length     Class      Mode 
+##       219 character character</code></pre>
+<div class="sourceCode" id="cb44"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb44-1" title="1">  <span class="kw">summary</span>(<span class="kw">unique</span>(who<span class="op">$</span>iso3)) <span class="co">#219</span></a></code></pre></div>
+<pre><code>##    Length     Class      Mode 
+##       219 character character</code></pre>
+<div class="sourceCode" id="cb46"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb46-1" title="1"><span class="co">#unique combinations of country with iso2 and iso3</span></a>
+<a class="sourceLine" id="cb46-2" title="2"><span class="co">#would expect to find 219 combinations if each country has the same equivalent in iso2 and iso3 (status = slightly better evidence!)</span></a>
+<a class="sourceLine" id="cb46-3" title="3"></a>
+<a class="sourceLine" id="cb46-4" title="4"><span class="kw">nrow</span>(<span class="kw">unique</span>(who[,<span class="kw">c</span>(<span class="st">&quot;country&quot;</span>,<span class="st">&quot;iso2&quot;</span>,<span class="st">&quot;iso3&quot;</span>)])) <span class="co">#219</span></a></code></pre></div>
+<pre><code>## [1] 219</code></pre>
+<ol start="4" style="list-style-type: decimal">
+<li>For each country, year, and sex compute the total number of cases of TB. Make an informative visualisation of the data.</li>
+</ol>
+<p>country &gt; year &gt; sex</p>
+<div class="sourceCode" id="cb48"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb48-1" title="1"><span class="co">#did not get to in time</span></a>
+<a class="sourceLine" id="cb48-2" title="2"><span class="co"># whom %&gt;%</span></a>
+<a class="sourceLine" id="cb48-3" title="3"><span class="co"># group_by(country,year,sex) %&gt;%</span></a>
+<a class="sourceLine" id="cb48-4" title="4"><span class="co"># count(cases)</span></a></code></pre></div>
 </div>
 </div>
 

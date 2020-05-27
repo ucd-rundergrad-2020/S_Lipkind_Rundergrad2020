@@ -118,7 +118,7 @@ table2.3 <- table2 %>%
 
 ggplot(table2.3, aes(year, count)) +
   geom_line(aes(group = country)) +
-  geom_point(color  = country)
+  geom_point(aes(color  = country))
 ```
 ```{r}
 #option 2: using tidied data frame
@@ -142,7 +142,7 @@ stocks %>%
   pivot_longer(`2015`:`2016`, names_to = "year", values_to = "return")
 ```
 *Oh, that's interesting! In the original tibble (stocks), the `year` column is of class **double**, whereas once the OG tibble has been passed through wider -> longer, `year` is now of class **character**.*
-*If one wanted to return `year` to the prior state, you would have to perform the extra step of parsing it.*
+*If one wanted to return `year` to the prior state, you would have to perform the extra step of parsing it.*  
 pivot_longer() has a names_ptype argument, e.g. names_ptype = list(year = double()). What does it do?
 ```{r}
 stocks %>% 
@@ -162,7 +162,7 @@ table4a %>%
   pivot_longer(c(`1999`, `2000`), names_to = "year", values_to = "cases")
 ```
 
- 3. What would happen if you widen this table? Why? How could you add a new column to uniquely identify each value?
+ 3. What would happen if you widen this table? Why? How could you add a new column to uniquely identify each value? *(absolute nightmare question)*
 ```{r}
 people <- as_tibble(tribble(
   ~name,             ~names,  ~values,
@@ -173,8 +173,6 @@ people <- as_tibble(tribble(
   "Jessica Cordero", "age",       37,
   "Jessica Cordero", "height",   156
 ))
-# oh dang, a tribble, f that noise, I don't want to deal with formulas
-# Phillip Woods has two ages??
 
 f_it <- as.data.frame(people)
 f_it[3,2] = "age2"
@@ -184,33 +182,103 @@ f_it <- as_tibble(f_it) %>%
   spread(names,name) %>%
   print()
 
-people %>%
-  group_by(name,names) %>%
-  mutate(count = count(names)) %>%
-  print()
-
-people_height <- as_tibble(people) %>%
-  unite(names_values,c(names,values), sep = "_", na.rm = FALSE) %>%
-  spread(name,names_values) %>%
- # pivot_longer(c(age_37,age_45,age_50), names_to = "age", values_to = "age_name") %>%
-  #pivot_longer(c(height_156,height_186), names_to = "height", values_to = "height_name") %>%
-  print()
-  
+#people %>%
+#  group_by(names) %>%
+#  mutate(group_id <- group_indices(values)) %>%
+#  print()
 ```
 
- 4. 
+ 4. Tidy the simple tibble below. Do you need to make it wider or longer? What are the variables?
+```{r}
+preg <- tribble(
+  ~pregnant, ~male, ~female,
+  "yes",     NA,    10,
+  "no",      20,    12
+)
+
+preggo <- as_tibble(preg) %>%
+  pivot_longer(c("male","female"), names_to = "gender", values_to = "count") %>%
+  select(gender, pregnant, count) %>%
+  print()
+```
+ 
 
 ### 12.4.3
 
- 1. 
+ 1. What do the extra and fill arguments do in separate()? Experiment with the various options for the following two toy datasets.
+```{r}
+#extra options : warn(default), drop, merge(length(into))
+##fill options : warn(emit warning and fill from right), right(fill with missing values on right), left(fill with missing vlues on left)
 
- 2. 
+tibble(x = c("a,b,c", "d,e,f,g", "h,i,j")) %>% #one row has an extra data point
+  separate(x, c("one", "two", "three"))
+#becomes
+tibble(x = c("a,b,c", "d,e,f,g", "h,i,j")) %>% #one row has an extra data point
+  separate(x, c("one", "two", "three"), extra = "merge")
+#fill makes no difference here b/c no empty values
+```
+```{r}
+tibble(x = c("a,b,c", "d,e", "f,g,i")) %>%  #one row lacks a data point
+  separate(x, c("one", "two", "three"))
+#becomes
+tibble(x = c("a,b,c", "d,e", "f,g,i")) %>%  #one row lacks a data point
+  separate(x, c("one", "two", "three"), fill = "left") #NA shifted to right (no effect if fill = "right)
+```
 
- 3. 
+ 2. Both unite() and separate() have a remove argument*(defaults to TRUE)*. What does it do? Why would you set it to FALSE?
+```{r}
+tibble(x = c("a,b,c", "d,e", "f,g,i")) %>%  #one row lacks a data point
+  separate(x, c("one", "two", "three"), remove = FALSE)
+```
+*`remove` allows one to remove a column describing the contents of each row of the original tibble.*  
+*Ordinarily, this is useful to remove unnecessary clutter.*  
+*Setting `remove = FALSE` could be helpful for someone to check if they separated their observations correctly.*  
 
+ 3. Compare and contrast separate() and extract(). Why are there three variations of separation (by position, by separator, and with groups), but only one unite?  
+ *`extract()` appears to separate with an additional option to separate according to a regex pattern, which could allow one to cleave cells with a complex pattern that couldn't be caught with `separate()`.*
+ *If one had a sentence as an observation, they could separate it in any number of ways (by each letter, each space, by clauses, by SOV), but one can only unite the sentence correctly one way.*  
 ### 12.6.1
+```{r}
+#relevant dataset
+data(who)
+whom <- who %>%
+  pivot_longer(
+    cols = new_sp_m014:newrel_f65, 
+    names_to = "key", 
+    values_to = "cases", 
+    values_drop_na = TRUE
+  ) %>% 
+  mutate(
+    key = stringr::str_replace(key, "newrel", "new_rel")
+  ) %>%
+  separate(key, c("new", "var", "sexage")) %>% 
+  select(-new, -iso2, -iso3) %>% 
+  separate(sexage, c("sex", "age"), sep = 1) %>%
+  print()
+```
 
- 3. 
 
- 4. 
+ 3. I claimed that iso2 and iso3 were redundant with country. Confirm this claim.
+```{r}
+#count unique values for each column (status = weak evidence)
+  summary(unique(who$country)) #219
+  summary(unique(who$iso2)) #219
+  summary(unique(who$iso3)) #219
+  
+#unique combinations of country with iso2 and iso3
+#would expect to find 219 combinations if each country has the same equivalent in iso2 and iso3 (status = slightly better evidence!)
+
+nrow(unique(who[,c("country","iso2","iso3")])) #219
+```
+ 
+ 4. For each country, year, and sex compute the total number of cases of TB. Make an informative visualisation of the data.
+ 
+ country > year > sex
+```{r}
+#did not get to in time
+# whom %>%
+# group_by(country,year,sex) %>%
+# count(cases)
+```
+ 
 
